@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
   table_name: { type: String, required: true }, // VD: Bàn 5
   status: { 
     type: String, 
-    enum: ['pending', 'cooking', 'serving', 'completed', 'cancelled'],
+    enum: ['pending', 'cooking',  'completed', 'cancelled'],
     default: 'pending'
   },
   items: [
