@@ -1,3 +1,4 @@
+
 import axiosClient from "./axiosClient";
 
 const orderApi = {
@@ -13,6 +14,9 @@ const orderApi = {
     // delete: (id) => {
     //     return axiosClient.delete(`/orders/${id}`);
     // }
+    getStats: () => {
+        return axiosClient.get('/orders/stats');
+    }
 };
 
 export default orderApi;

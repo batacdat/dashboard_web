@@ -8,6 +8,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 import menuRoutes from './routes/menuRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+
+
+
+
 
 // 1. Cấu hình & Kết nối DB
 dotenv.config();
@@ -43,7 +48,7 @@ app.use((req, res, next) => {
 // 5. Routes
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
-
+app.use('/api/auth', authRoutes);
 // 6. Test route
 app.get('/', (req, res) => {
   res.json({ message: 'API Restaurant is running...' });

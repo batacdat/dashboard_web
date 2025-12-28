@@ -1,10 +1,11 @@
+// models/Order.js
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
-  table_name: { type: String, required: true }, // VD: Bàn 5
+  table_name: { type: String, required: true },
   status: { 
     type: String, 
-    enum: ['pending', 'cooking',  'completed', 'cancelled'],
+    enum: ['pending', 'cooking', 'completed', 'cancelled', 'paid'], // THÊM 'paid' vào đây
     default: 'pending'
   },
   items: [
@@ -12,7 +13,7 @@ const orderSchema = new mongoose.Schema({
       menu_item_id: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
       name: { type: String, required: true },
       quantity: { type: Number, required: true },
-      price: { type: Number, required: true }, // Lưu giá tại thời điểm bán
+      price: { type: Number, required: true },
       note: { type: String }
     }
   ],

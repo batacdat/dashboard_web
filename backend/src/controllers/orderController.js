@@ -70,7 +70,7 @@ export const updateOrderStatus = async (req, res) => {
         console.log(`🔄 Updating order ${id} to status: ${status}`);
 
         // Kiểm tra status hợp lệ
-        const validStatuses = ['pending', 'cooking', 'completed', 'cancelled'];
+        const validStatuses = ['pending', 'cooking', 'completed', 'cancelled', 'paid'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ 
                 message: 'Invalid status',
@@ -139,3 +139,60 @@ export const getOrderById = async (req, res) => {
         });
     }
 };
+
+// lấy thống kê doanh thu theo ngày (optional - thêm nếu cần)
+export const getStats = async (req, res) => {
+    try {
+        const orders = await Order.find({ status: 'paid' }); // Chỉ tính đơn đã thanh toán
+
+        // Tính tổng doanh thu
+        const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0);
+
+        // tinh doanh thu theo ngày
+        const revenueByDate = {};
+        orders.forEach(order => {
+            const date = new Date(order.created_at).toLocaleDateString('vi-VN');
+            if (!revenueByDate[date]) {
+                revenueByDate[date] = 0;
+            }
+            revenueByDate[date] += order.total_amount;
+        });
+
+        const chartData = Object.keys(revenueByDate).map(date => ({
+            date,
+            revenue: revenueByDate[date]
+        }));
+        res.json({
+            totalOrders: orders.length,
+            totalRevenue,
+            chartData
+        });
+
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Error getting stats', 
+            error: error.message 
+        });
+    }
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

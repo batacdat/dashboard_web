@@ -1,143 +1,161 @@
 import React, { useState, useEffect } from 'react';
 import menuApi from '../api/menuApi.js';
 import orderApi from '../api/orderApi.js';
-
-
+import { toast } from 'react-toastify'; // Nhớ import toast nếu chưa có
 
 const OrderPage = () => {
     const [menu, setMenu] = useState([]);
     const [cart, setCart] = useState([]);
+    // 👇 1. State Tab cho OrderPage
+    const [activeTab, setActiveTab] = useState('Đồ ăn');
+    const categories = ['Đồ ăn', 'Đồ uống', 'Khác'];
+
+    // Hardcode bàn 1 (Sau này làm chọn bàn sau)
     const [tableName, setTableName] = useState('Bàn 1');
 
+    useEffect(() => {
+        const fetchMenu = async () => {
+            try {
+                const res = await menuApi.getAll();
+                setMenu(res.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchMenu();
+    }, []);
 
-// 1. Lấy thực đơn từ API
-useEffect(() => {
-    const fetchMenu = async () => {
-        const res = await menuApi.getAll();
-       setMenu(res.data);
-    };
-    fetchMenu();
-}, []);
-    //2. Thêm món vào giỏ hàng
+    // 👇 Lọc menu theo Tab
+    const filteredMenu = menu.filter(item => item.category === activeTab);
+
     const addToCart = (food) => {
         const existingItem = cart.find(item => item._id === food._id);
         if (existingItem) {
-            // Nếu món đã có trong giỏ, tăng số lượng
             setCart(cart.map(item => 
                 item._id === food._id ? { ...item, quantity: item.quantity + 1 } : item
             ));
         } else {
-            // Nếu món chưa có trong giỏ, thêm mới với số lượng 1
             setCart([...cart, { ...food, quantity: 1 }]);
         }
+        // Hiệu ứng rung nhẹ hoặc toast nhỏ để biết đã thêm (Tùy chọn)
     };
-//3.Xoa món khỏi giỏ hàng
-const removeFromCart = (foodId) => {
-    setCart(cart.filter(item => item._id !== foodId));
-};
-// 4. tinh tổng tiền
-const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-// 5. Gửi đơn hàng (Submit)
-const handleSubmitOrder = async () => {
-    if (cart.length === 0) {
-        return alert("Giỏ hàng trống!");
-    }
-    const orderData = {
-        table_name:tableName,
-        items: cart.map(item => ({
-            menu_item_id: item._id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
-        })),
-        total_amount: totalAmount
+
+    const removeFromCart = (foodId) => {
+        setCart(cart.filter(item => item._id !== foodId));
     };
-    try {
-        await orderApi.create(orderData);
-        alert("✅ Đã gửi đơn xuống bếp thành công!");
-        setCart([]); // Xóa giỏ hàng sau khi đặt hàng
-    } catch (error) {
-        alert("Lỗi khi gửi đơn: " + error.message);
-    }
-};
+
+    const handleSubmitOrder = async () => {
+        if (cart.length === 0) return toast.warning("Giỏ hàng đang trống! 🛒");
+        
+        try {
+            const orderData = {
+                table_name: tableName,
+                items: cart.map(item => ({
+                    menu_item_id: item._id,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+            };
+            await orderApi.create(orderData);
+            toast.success("Đã gửi đơn xuống bếp! 👨‍🍳");
+            setCart([]); 
+        } catch (error) {
+            toast.error("Lỗi gửi đơn: " + error.message);
+        }
+    };
+
+    // Tính tổng tiền
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
     return (
-    <div className="flex h-screen bg-base-200 gap-4 p-4 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen bg-base-200 p-4 gap-4">
       
-      {/* CỘT TRÁI: DANH SÁCH MÓN (70%) */}
-      <div className="w-2/3 flex flex-col overflow-y-auto pr-2">
-        <h2 className="text-2xl font-bold mb-4">🍔 Chọn món ăn</h2>
-        <div className="grid grid-cols-3 gap-4 pb-20">
-          {menu.map((food) => (
-            <div 
-              key={food._id} 
-              className="card bg-base-100 shadow-lg cursor-pointer hover:scale-105 transition-transform"
-              onClick={() => addToCart(food)}
-            >
-              <figure className="h-32">
-                <img src={food.image} alt={food.name} className="w-full h-full object-cover"/>
-              </figure>
-              <div className="card-body p-3 text-center">
-                <h3 className="font-bold">{food.name}</h3>
-                <p className="text-primary font-bold">{food.price.toLocaleString()}đ</p>
-              </div>
-            </div>
-          ))}
+      {/* CỘT TRÁI: DANH SÁCH MÓN ĂN (65%) */}
+      <div className="lg:w-[65%] flex flex-col gap-4">
+        
+        {/* 👇 2. THANH TABS CATEGORY */}
+        <div className="tabs tabs-boxed bg-white shadow-sm p-2">
+            {categories.map((cat) => (
+                <a 
+                    key={cat}
+                    className={`tab tab-lg flex-1 ${activeTab === cat ? 'tab-active bg-primary text-white font-bold' : ''}`}
+                    onClick={() => setActiveTab(cat)}
+                >
+                    {cat}
+                </a>
+            ))}
+        </div>
+
+        {/* GRID MÓN ĂN */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto pr-2 pb-20 custom-scrollbar">
+            {filteredMenu.map((food) => (
+                <div 
+                    key={food._id} 
+                    className="card bg-base-100 shadow hover:shadow-lg cursor-pointer transition-all active:scale-95"
+                    onClick={() => addToCart(food)}
+                >
+                    <figure className="h-32">
+                        <img 
+                            src={food.image || "https://cdn-icons-png.flaticon.com/512/1377/1377194.png"} 
+                            alt={food.name} 
+                            className="w-full h-full object-cover"
+                        />
+                    </figure>
+                    <div className="card-body p-3">
+                        <h2 className="card-title text-sm">{food.name}</h2>
+                        <p className="text-primary font-bold">{food.price.toLocaleString()} đ</p>
+                    </div>
+                </div>
+            ))}
         </div>
       </div>
 
-      {/* CỘT PHẢI: GIỎ HÀNG (30%) */}
-      <div className="w-1/3 bg-base-100 rounded-xl shadow-xl flex flex-col h-full">
-        <div className="p-4 border-b">
-            <h2 className="text-xl font-bold">🧾 Đơn gọi món</h2>
-            <div className="mt-2">
-                <label className="label-text font-bold">Chọn bàn:</label>
-                <select 
-                    className="select select-bordered select-sm w-full mt-1"
-                    value={tableName}
-                    onChange={(e) => setTableName(e.target.value)}
-                >
-                    {[1,2,3,4,5,6,7,8,9,10].map(num => (
-                        <option key={num} value={num}>Bàn số {num}</option>
-                    ))}
-                </select>
-            </div>
+      {/* CỘT PHẢI: GIỎ HÀNG (35%) */}
+      <div className="lg:w-[35%] bg-white rounded-xl shadow-xl flex flex-col h-full overflow-hidden">
+        <div className="p-4 bg-primary text-white font-bold text-lg flex justify-between">
+            <span>🛒 Đơn của: {tableName}</span>
+            <span>{cart.length} món</span>
         </div>
 
-        {/* LIST CÁC MÓN ĐÃ CHỌN */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {cart.length === 0 ? (
                 <div className="text-center text-gray-400 mt-10">Chưa có món nào</div>
             ) : (
                 cart.map((item) => (
-                    <div key={item._id} className="flex justify-between items-center mb-4 border-b pb-2">
+                    <div key={item._id} className="flex justify-between items-center border-b pb-2 border-dashed">
                         <div>
-                            <div className="font-bold">{item.name}</div>
-                            <div className="text-sm text-gray-500">
+                            <div className="font-bold text-gray-700">{item.name}</div>
+                            <div className="text-xs text-gray-500">
                                 {item.price.toLocaleString()} x {item.quantity}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                              <div className="font-bold text-primary">
                                 {(item.price * item.quantity).toLocaleString()}
                              </div>
-                             <button onClick={() => removeFromCart(item._id)} className="btn btn-xs btn-circle btn-error">x</button>
+                             <button 
+                                onClick={(e) => {e.stopPropagation(); removeFromCart(item._id)}} 
+                                className="btn btn-xs btn-circle btn-error text-white"
+                             >
+                                ✕
+                             </button>
                         </div>
                     </div>
                 ))
             )}
         </div>
 
-        {/* FOOTER: TỔNG TIỀN & NÚT GỬI */}
-        <div className="p-4 bg-base-200 rounded-b-xl">
+        <div className="p-4 bg-gray-50 border-t">
             <div className="flex justify-between text-xl font-bold mb-4">
                 <span>Tổng cộng:</span>
                 <span className="text-primary">{totalAmount.toLocaleString()} đ</span>
             </div>
             <button 
-                className="btn btn-primary w-full btn-lg"
+                className="btn btn-primary w-full btn-lg shadow-lg hover:shadow-xl transform transition-transform hover:-translate-y-1"
                 onClick={handleSubmitOrder}
             >
-                👨‍🍳 Gửi xuống bếp
+                👨‍🍳 Gửi Bếp Ngay
             </button>
         </div>
       </div>
