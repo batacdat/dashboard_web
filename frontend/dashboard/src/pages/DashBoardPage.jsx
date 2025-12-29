@@ -29,10 +29,10 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
         {/* Thẻ 1: Tổng doanh thu */}
-        <div className="stats shadow bg-white text-primary-content">
+        <div className="stats shadow bg-white text-primary-content overflow-x-hidden ">
           <div className="stat">
             <div className="stat-title text-gray-500 font-bold">Tổng doanh thu</div>
-            <div className="stat-value text-primary">
+            <div className="stat-value text-primary text-2xl">
               {stats.totalRevenue.toLocaleString()} đ
             </div>
             <div className="stat-desc text-gray-400">Tất cả các đơn đã thanh toán</div>
@@ -40,19 +40,19 @@ const DashboardPage = () => {
         </div>
 
         {/* Thẻ 2: Tổng đơn hàng */}
-        <div className="stats shadow bg-white">
+        <div className="stats shadow bg-white ">
           <div className="stat">
             <div className="stat-title text-gray-500 font-bold">Số đơn đã bán</div>
-            <div className="stat-value text-secondary">{stats.totalOrders}</div>
+            <div className="stat-value text-secondary text-2xl">{stats.totalOrders}</div>
             <div className="stat-desc">Đơn hàng thành công</div>
           </div>
         </div>
 
         {/* Thẻ 3: Món bán chạy (Ví dụ giả lập) */}
-        <div className="stats shadow bg-white">
+        <div className="stats shadow bg-white overflow-x-hidden">
           <div className="stat">
             <div className="stat-title text-gray-500 font-bold">Trạng thái hệ thống</div>
-            <div className="stat-value text-success">Ổn định</div>
+            <div className="stat-value text-success text-2xl">Ổn định</div>
             <div className="stat-desc">Server đang chạy tốt</div>
           </div>
         </div>

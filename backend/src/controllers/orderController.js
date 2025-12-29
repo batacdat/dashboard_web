@@ -174,12 +174,41 @@ export const getStats = async (req, res) => {
             error: error.message 
         });
     }
-
-
-
 };
 
+// 👇 THÊM HÀM NÀY ĐỂ CẬP NHẬT TRẠNG THÁI (THANH TOÁN)
+export const updateOrder = async (req, res) => {
+    try {
+        const { id } = req.params;      // Lấy ID đơn hàng từ URL
+        const { status } = req.body;    // Lấy trạng thái từ Frontend gửi lên
 
+        // Kiểm tra xem có gửi status lên không
+        if (!status) {
+            return res.status(400).json({ message: 'Vui lòng cung cấp trạng thái mới (status)' });
+        }
+
+        // Tìm và cập nhật
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            { status: status }, 
+            { new: true } // Trả về dữ liệu mới sau khi sửa
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+        }
+
+        // Real-time: Báo cho các bên biết đơn hàng đã đổi trạng thái
+        if (req.io) {
+            req.io.emit('update_status', updatedOrder);
+        }
+
+        res.status(200).json(updatedOrder);
+    } catch (error) {
+        console.error('❌ Lỗi cập nhật đơn:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
 
 
 

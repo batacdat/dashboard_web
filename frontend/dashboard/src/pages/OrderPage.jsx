@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import menuApi from '../api/menuApi.js';
 import orderApi from '../api/orderApi.js';
 import { toast } from 'react-toastify'; // Nhớ import toast nếu chưa có
+import socket from '../api/socket.js';
 
 const OrderPage = () => {
     const [menu, setMenu] = useState([]);
@@ -11,7 +12,7 @@ const OrderPage = () => {
     const categories = ['Đồ ăn', 'Đồ uống', 'Khác'];
 
     // Hardcode bàn 1 (Sau này làm chọn bàn sau)
-    const [tableName, setTableName] = useState('Bàn 1');
+    const [tableName, setTableName] = useState('1');
 
     useEffect(() => {
         const fetchMenu = async () => {
@@ -55,9 +56,12 @@ const OrderPage = () => {
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price
-                }))
+                })),
+                total_amount: totalAmount,
             };
-            await orderApi.create(orderData);
+            // 👇 THÊM ĐOẠN NÀY: Gửi tín hiệu Socket
+           await orderApi.create(orderData);
+           socket.emit('newOrder', orderData); // Gửi sự kiện socket
             toast.success("Đã gửi đơn xuống bếp! 👨‍🍳");
             setCart([]); 
         } catch (error) {
@@ -111,51 +115,59 @@ const OrderPage = () => {
         </div>
       </div>
 
-      {/* CỘT PHẢI: GIỎ HÀNG (35%) */}
-      <div className="lg:w-[35%] bg-white rounded-xl shadow-xl flex flex-col h-full overflow-hidden">
-        <div className="p-4 bg-primary text-white font-bold text-lg flex justify-between">
-            <span>🛒 Đơn của: {tableName}</span>
-            <span>{cart.length} món</span>
+      {/* CỘT PHẢI: GIỎ HÀNG (30%) */}
+      <div className="w-1/3 bg-base-100 rounded-xl shadow-xl flex flex-col h-full">
+        <div className="p-4 border-b">
+            <h2 className="text-sm lg:text-xl font-bold ">🧾 Đơn gọi món</h2>
+            <div className="mt-2">
+                <label className="label-text font-bold">Chọn bàn:</label>
+                <select 
+                    className="select select-bordered select-sm w-full mt-1"
+                    value={tableName}
+                    onChange={(e) => setTableName(e.target.value)}
+                >
+                    {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                        <option key={num} value={num}>Bàn số {num}</option>
+                    ))}
+                </select>
+            </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {/* LIST CÁC MÓN ĐÃ CHỌN */}
+        <div className="flex-1 overflow-y-auto p-4">
             {cart.length === 0 ? (
                 <div className="text-center text-gray-400 mt-10">Chưa có món nào</div>
             ) : (
                 cart.map((item) => (
-                    <div key={item._id} className="flex justify-between items-center border-b pb-2 border-dashed">
+                    <div key={item._id} className="flex justify-between items-center mb-4 border-b pb-2">
                         <div>
-                            <div className="font-bold text-gray-700">{item.name}</div>
-                            <div className="text-xs text-gray-500">
+                            <div className="font-bold">{item.name}</div>
+                            <div className="text-sm text-gray-500">
                                 {item.price.toLocaleString()} x {item.quantity}
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                             <div className="font-bold text-primary">
+                        <div className="flex items-center gap-2">
+                             <div className="font-bold text-primary md:text-[12px]">
                                 {(item.price * item.quantity).toLocaleString()}
                              </div>
-                             <button 
-                                onClick={(e) => {e.stopPropagation(); removeFromCart(item._id)}} 
-                                className="btn btn-xs btn-circle btn-error text-white"
-                             >
-                                ✕
-                             </button>
+                             <button onClick={() => removeFromCart(item._id)} className="btn btn-xs btn-circle btn-error">x</button>
                         </div>
                     </div>
                 ))
             )}
         </div>
 
-        <div className="p-4 bg-gray-50 border-t">
+        {/* FOOTER: TỔNG TIỀN & NÚT GỬI */}
+        <div className="p-4 bg-base-200 rounded-b-xl">
             <div className="flex justify-between text-xl font-bold mb-4">
-                <span>Tổng cộng:</span>
-                <span className="text-primary">{totalAmount.toLocaleString()} đ</span>
+                <span className='text-sm lg:text-lg'>Tổng cộng:</span>
+                <span className="text-primary text-sm lg:text-lg">{totalAmount.toLocaleString()} đ</span>
             </div>
             <button 
-                className="btn btn-primary w-full btn-lg shadow-lg hover:shadow-xl transform transition-transform hover:-translate-y-1"
+                className=" text-sm btn btn-primary w-full btn-lg lg:text-lg "
                 onClick={handleSubmitOrder}
             >
-                👨‍🍳 Gửi Bếp Ngay
+                👨‍🍳 Gửi xuống bếp
             </button>
         </div>
       </div>

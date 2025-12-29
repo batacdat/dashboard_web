@@ -31,6 +31,27 @@ const io = new Server(server, {
   },
 });
 
+// 9. Kết nối socket.io
+io.on('connection', (socket) => {
+  console.log(`⚡ User connected: ${socket.id}`);
+
+  //1.lắng nghe sự kiện "Có đơn mới" từ OrderPage
+  socket.on('newOrder', (orderData) => {
+    console.log("🔔 Có đơn mới từ bàn:", orderData.table_name);
+
+    // 2. Phát loa thông báo cho TẤT CẢ mọi người (Bếp, Thu ngân...)
+        io.emit('newOrder', orderData);
+  });
+  //3.lắng nghe sự kiện "Cập nhật trạng thái món ăn" từ KitchenPage
+  socket.on('update_status', (data) => {
+    io.emit('update_status', data); // Báo cho Thu ngân biết
+  });
+
+  socket.on('disconnect', () => {
+    console.log('🔥 User disconnected ' + socket.id);
+  });
+});
+
 // 4. Middlewares
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -68,14 +89,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 9. Kết nối socket.io
-io.on('connection', (socket) => {
-  console.log('A user connected: ' + socket.id);
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected: ' + socket.id);
-  });
-});
 
 // 10. Chạy server
 const PORT = process.env.PORT || 3000;

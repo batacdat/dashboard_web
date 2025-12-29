@@ -2,20 +2,22 @@ import express from 'express';
 import { 
     createOrder, 
     getOrders, 
-    updateOrderStatus,
+    // updateOrderStatus,  <-- 1. Bỏ import thừa này đi
     getOrderById,  
-    getStats
+    getStats,
+    updateOrder
 } from '../controllers/orderController.js';
 
 const router = express.Router();
 
-// --- CÁC ROUTE CỤ THỂ PHẢI ĐẶT TRƯỚC ---
-router.get('/stats', getStats);          // 👈 ĐƯA CÁI NÀY LÊN ĐẦU TIÊN (Trước /:id)
+router.get('/stats', getStats);          
 
-// --- CÁC ROUTE CHUNG CHUNG ĐẶT SAU ---
-router.post('/', createOrder);           // Tạo đơn
-router.get('/', getOrders);              // Lấy danh sách
-router.get('/:id', getOrderById);        // Lấy chi tiết (Dòng này "ăn tạp", nên phải để dưới cùng)
-router.put('/:id', updateOrderStatus);   // Cập nhật
+router.post('/', createOrder);           
+router.get('/', getOrders);              
+router.get('/:id', getOrderById);        
+
+// router.put('/:id', updateOrderStatus);   <-- 2. XÓA HOẶC COMMENT DÒNG NÀY (Đây là nguyên nhân chính gây lỗi)
+
+router.put('/:id', updateOrder);  // <-- 3. Giữ lại dòng này (Hàm mới của chúng ta)
 
 export default router;

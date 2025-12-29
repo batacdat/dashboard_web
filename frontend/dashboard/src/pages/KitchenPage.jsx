@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import orderApi from '../api/orderApi';
+import socket from '../api/socket';
+import { toast } from 'react-toastify';
 
 const KitchenPage = () => {
   const [orders, setOrders] = useState([]);
@@ -45,9 +47,30 @@ const KitchenPage = () => {
 
   useEffect(() => {
     fetchOrders();
-    // Tự động cập nhật mỗi 5 giây
-    const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
+
+    //2.lang nghe sự kiện Socket để tự động cập nhật
+    socket.on('newOrder', (data) => {
+
+      toast.info(`🔔 Có đơn mới: Bàn ${data.table_name || 'Bàn ?'}`);
+      // Phát âm thanh "Ting" (Tùy chọn)
+        const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
+        audio.play().catch(() => console.log("Chặn autoplay"));
+
+    // Gọi lại API để cập nhật danh sách ngay lập tức
+      fetchOrders();
+    });
+
+// Cập nhật trạng thái món ăn (Ví dụ: Bếp bấm xong -> Thu ngân thấy ngay)
+    socket.on('update_status', () => {
+        fetchOrders();
+    });
+
+    // Dọn dẹp khi thoát trang
+    return () => {
+        socket.off('newOrder');
+        socket.off('update_status');
+    };
+
   }, []);
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -74,7 +97,7 @@ const KitchenPage = () => {
               <div className="flex justify-between items-center border-b pb-2 mb-2 border-gray-300">
                 <h3 className="card-title text-xl text-blue-800 font-extrabold">
                   {/* Đây là chỗ hiển thị tên bàn đã được xử lý */}
-                  {order.displayTableName} 
+                     Bàn {order.displayTableName} 
                 </h3>
                 <span className={`badge ${order.displayStatus === 'pending' ? 'badge-warning' : 'badge-success text-white'} font-bold`}>
                   {order.displayStatus === 'pending' ? 'Chờ làm' : 'Đang nấu'}

@@ -157,7 +157,7 @@ const MenuPage = () => {
 
             <input name="price" type="number" placeholder="Giá tiền" className="input input-bordered" value={formData.price} onChange={handleChange} required />
             <input name="image" placeholder="Link ảnh (URL)" className="input input-bordered" value={formData.image} onChange={handleChange} />
-            
+            <textarea name="description" placeholder="Mô tả (tùy chọn)" className="textarea textarea-bordered" value={formData.description} onChange={handleChange} />
             <div className="modal-action">
               <button type="button" className="btn" onClick={() => document.getElementById('my_modal_1').close()}>Hủy</button>
               <button type="submit" className="btn btn-primary">Lưu lại</button>

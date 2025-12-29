@@ -1,4 +1,5 @@
 
+
 import axiosClient from "./axiosClient";
 
 const orderApi = {
@@ -9,11 +10,12 @@ const orderApi = {
         return axiosClient.post('/orders', data);
     },
     updateStatus: (id, status) => {
-        return axiosClient.put(`/orders/${id}`, { status });
+        // Nó tự động tạo object { status: ... } ở đây rồi
+        return axiosClient.put(`/orders/${id}`, { status }); 
     },
-    // delete: (id) => {
-    //     return axiosClient.delete(`/orders/${id}`);
-    // }
+    updateOrder: (id, updateData) => {
+        return axiosClient.put(`/orders/${id}`, updateData);
+    },
     getStats: () => {
         return axiosClient.get('/orders/stats');
     }
