@@ -142,37 +142,67 @@ export const getOrderById = async (req, res) => {
 
 // lấy thống kê doanh thu theo ngày (optional - thêm nếu cần)
 export const getStats = async (req, res) => {
-    try {
-        const orders = await Order.find({ status: 'paid' }); // Chỉ tính đơn đã thanh toán
+  try {
+        // 1. Lấy tham số filter từ Client gửi lên (mặc định là 'day')
+        const { type = 'day' } = req.query; 
+        
+        // Định dạng ngày tháng cho MongoDB nhóm lại
+        let format = "%Y-%m-%d"; // Theo ngày: 2023-12-25
+        if (type === 'month') format = "%Y-%m"; // Theo tháng: 2023-12
+        if (type === 'year') format = "%Y";     // Theo năm: 2023
 
-        // Tính tổng doanh thu
-        const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0);
+        // --- A. THỐNG KÊ DOANH THU THEO THỜI GIAN (Bar/Line Chart) ---
+        const revenueStats = await Order.aggregate([
+            { $match: { status: 'paid' } }, // Chỉ lấy đơn đã thanh toán
+            {
+                $group: {
+                    _id: { $dateToString: { format: format, date: "$created_at" } },
+                    revenue: { $sum: "$total_amount" }, // Tổng tiền
+                    count: { $sum: 1 } // Số đơn
+                }
+            },
+            { $sort: { _id: 1 } } // Sắp xếp theo ngày tăng dần
+        ]);
 
-        // tinh doanh thu theo ngày
-        const revenueByDate = {};
-        orders.forEach(order => {
-            const date = new Date(order.created_at).toLocaleDateString('vi-VN');
-            if (!revenueByDate[date]) {
-                revenueByDate[date] = 0;
-            }
-            revenueByDate[date] += order.total_amount;
-        });
-
-        const chartData = Object.keys(revenueByDate).map(date => ({
-            date,
-            revenue: revenueByDate[date]
+        // Chuẩn hóa dữ liệu trả về cho Frontend
+        const chartData = revenueStats.map(item => ({
+            date: item._id,
+            revenue: item.revenue,
+            orders: item.count
         }));
+
+        // --- B. THỐNG KÊ TOP 5 MÓN BÁN CHẠY (Pie Chart) ---
+        const topItems = await Order.aggregate([
+            { $match: { status: 'paid' } },
+            { $unwind: "$items" }, // Tách mảng items ra từng dòng riêng lẻ
+            {
+                $group: {
+                    _id: "$items.name", // Nhóm theo tên món
+                    value: { $sum: "$items.quantity" } // Tổng số lượng bán
+                }
+            },
+            { $sort: { value: -1 } }, // Sắp xếp giảm dần
+            { $limit: 5 } // Chỉ lấy Top 5
+        ]);
+        
+        // Đổi key _id thành name cho Recharts dễ đọc
+        const pieData = topItems.map(item => ({ name: item._id, value: item.value }));
+
+        // --- C. TỔNG QUAN ---
+        const totalRevenue = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
+        const totalOrders = chartData.reduce((acc, curr) => acc + curr.orders, 0);
+
         res.json({
-            totalOrders: orders.length,
+            type,
             totalRevenue,
-            chartData
+            totalOrders,
+            chartData, // Dữ liệu cho biểu đồ cột/đường
+            pieData    // Dữ liệu cho biểu đồ tròn
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            message: 'Error getting stats', 
-            error: error.message 
-        });
+        console.error(error);
+        res.status(500).json({ message: error.message });
     }
 };
 

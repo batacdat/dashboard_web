@@ -16,8 +16,8 @@ const orderApi = {
     updateOrder: (id, updateData) => {
         return axiosClient.put(`/orders/${id}`, updateData);
     },
-    getStats: () => {
-        return axiosClient.get('/orders/stats');
+    getStats: (type='day') => {
+        return axiosClient.get(`/orders/stats?type=${type}`);
     }
 };
 
