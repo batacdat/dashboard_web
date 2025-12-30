@@ -9,7 +9,7 @@ export const register = async (req, res) => {
     try {
         // Lấy dữ liệu từ frontend
         // Nếu không có role thì mặc định gán là 'user'
-        const { username, password, role } = req.body;
+        const { username, password,fullName , role } = req.body;
         
         // Kiểm tra xem user đã tồn tại chưa
         const existingUser = await User.findOne({ username });
@@ -28,11 +28,36 @@ export const register = async (req, res) => {
         const newUser = new User({
             username,
             password: hashedPassword,
+            fullName: fullName || '',
             role: userRole
         });
 
         // Lưu vào DB
         await newUser.save();
+
+        // sử dụng socket realtime
+// 👇 SỬA LẠI ĐOẠN SOCKET CHO CHUẨN:
+        try {
+            // Lấy io thông qua app.get (do đã set bên server.js)
+            const io = req.app.get('io');
+            if (io) {
+                io.emit('USER_UPDATE', { 
+                    type: 'CREATE', // Nên viết hoa cho thống nhất
+                    user: {
+                        _id: newUser._id,
+                        username: newUser.username,
+                        fullName: newUser.fullName,
+                        role: newUser.role,
+                        createdAt: newUser.createdAt
+                    }
+                });
+            }
+        } catch (socketError) {
+            console.error("Lỗi socket:", socketError);
+            // Không return lỗi ở đây để tránh việc User tạo được rồi nhưng lại báo lỗi ra frontend
+        }
+
+
 
         // --- NÂNG CẤP: Tạo Token luôn để user không phải đăng nhập lại ---
         const token = jwt.sign(
@@ -47,6 +72,7 @@ export const register = async (req, res) => {
             user: {
                 _id: newUser._id,
                 username: newUser.username,
+                fullName: newUser.fullName,
                 role: newUser.role
             }
         });

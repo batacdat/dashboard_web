@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import menuRoutes from './routes/menuRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-
+import userRoutes from './routes/userRoutes.js';
 
 
 
@@ -25,11 +25,14 @@ const server = http.createServer(app);
 // 3. Cấu hình socket.io
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT'], // Thêm PUT method
+    origin: 'http://localhost:5173', // Đảm bảo đúng port frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
 });
+
+// 👇 QUAN TRỌNG: Thêm dòng này để lưu biến io vào app
+app.set('io', io);
 
 // 9. Kết nối socket.io
 io.on('connection', (socket) => {
@@ -70,6 +73,7 @@ app.use((req, res, next) => {
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 // 6. Test route
 app.get('/', (req, res) => {
   res.json({ message: 'API Restaurant is running...' });

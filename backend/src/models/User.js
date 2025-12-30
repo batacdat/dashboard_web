@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    fullName: {
+        type: String,
+        default: ''
+    },
     role: {
         type: String,
         enum: ['staff', 'admin', 'kitchen', 'user'], // Thêm 'user' cho đầy đủ

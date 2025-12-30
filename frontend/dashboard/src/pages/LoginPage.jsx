@@ -14,6 +14,7 @@ const LoginPage = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
+        fullName: '',
         confirmPassword: '', 
         role: 'staff' // Mặc định là nhân viên
     });
@@ -54,6 +55,7 @@ const LoginPage = () => {
                 const res = await authApi.register({
                     username: formData.username,
                     password: formData.password,
+                    fullName: formData.fullName,
                     role: formData.role // <--- Gửi role người dùng chọn
                 });
                 
@@ -77,20 +79,20 @@ const LoginPage = () => {
         localStorage.setItem('user', JSON.stringify(res.data.user));
 
         const role = res.data.user.role;
-        let targetPath = '/';
-        
-        // Điều hướng dựa trên quyền vừa đăng nhập/đăng ký
-        if (role === 'admin') targetPath = '/dashboard';
-        else if (role === 'kitchen') targetPath = '/kitchen';
-        else targetPath = '/'; // staff hoặc user thì về trang order
 
-        navigate(targetPath);
+        if (role === 'admin') {
+            navigate('/dashboard'); // Admin thì vào xem Thống kê
+        } else if (role === 'kitchen') {
+            navigate('/kitchen');   // Bếp thì vào trang Bếp
+        } else {
+            navigate('/');          // Nhân viên (staff) thì vào trang Gọi món
+        }
         window.location.reload(); 
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700 p-4">
-            <div className="card w-full max-w-md bg-white shadow-2xl overflow-hidden">
+            <div className="card w-full max-w-md bg-white shadow-2xl ">
                 <div className="card-body p-8">
                     
                     {/* LOGO */}
@@ -108,6 +110,20 @@ const LoginPage = () => {
                                 <span>{error}</span>
                             </div>
                         )}
+                        {!isLoginMode && (
+                            <>
+                                                                {/* Input Full Name */}
+                                <div className="form-control animate-fade-in-down">
+                                    <label className="label py-1"><span className="label-text font-bold">Họ và tên</span></label>
+                                    <input 
+                                        type="text" name="fullName" placeholder="Ví dụ: Nguyễn Văn A" 
+                                        className="input input-bordered w-full bg-gray-50 focus:input-primary" 
+                                        value={formData.fullName} onChange={handleChange} required
+                                    />
+                                </div>
+                            </>
+                        )}
+                   
 
                         {/* Input Username */}
                         <div className="form-control">
@@ -141,7 +157,7 @@ const LoginPage = () => {
                                         value={formData.confirmPassword} onChange={handleChange} required
                                     />
                                 </div>
-
+                               
                                 {/* 👇 CHỌN QUYỀN (ROLE) - QUAN TRỌNG */}
                                 <div className="form-control animate-fade-in-down">
                                     <label className="label py-1"><span className="label-text font-bold">Vai trò</span></label>
@@ -153,7 +169,7 @@ const LoginPage = () => {
                                     >
                                         <option value="staff">👤 Nhân viên (Staff)</option>
                                         <option value="kitchen">👨‍🍳 Bếp (Kitchen)</option>
-                                        <option value="admin">🛠 Quản lý (Admin)</option>
+                                        {/* <option value="admin">🛠 Quản lý (Admin)</option> */}
                                     </select>
                                     <label className="label">
                                         <span className="label-text-alt text-gray-400">Chọn vai trò phù hợp với công việc</span>

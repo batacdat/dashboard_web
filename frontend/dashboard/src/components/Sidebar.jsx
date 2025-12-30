@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify'; 
+
 
 const Sidebar = ({ children }) => {
   const location = useLocation();
@@ -8,6 +9,9 @@ const Sidebar = ({ children }) => {
   
   // Lấy thông tin user
   const user = JSON.parse(localStorage.getItem('user')) || { role: 'staff' };
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState(null);
+
 
   // DANH SÁCH MENU
   const menuItems = [
@@ -35,16 +39,26 @@ const Sidebar = ({ children }) => {
         path: "/admin", 
         label: "🍔 Quản lý Menu", 
         roles: ['admin'] 
+    },
+    { 
+        path: "/employees", 
+        label: "👥 Nhân viên", 
+        roles: ['admin'] 
     }
   ];
 
   const handleLogout = () => {
-    if (window.confirm("Bạn muốn đăng xuất?")) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
-        toast.info("Hẹn gặp lại! 👋");
-    }
+    setUserToDelete(user);
+    setDeleteModalOpen(true);
+  };
+
+const handleConfirmLogout = () => {
+  if(!userToDelete) return;
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+    window.location.reload();
   };
 
   // Hàm check active link
@@ -83,37 +97,25 @@ const Sidebar = ({ children }) => {
             <div className="text-xs text-gray-500 mt-1">Xin chào, {user.username}</div>
           </li>
           
-          {/* DANH SÁCH MENU */}
-        {menuItems.map((item, index) => {
-            // Logic kiểm tra quyền
-            const isAllowed = item.roles.includes(user.role);
+                  {/* DANH SÁCH MENU */}
+          {menuItems.map((item, index) => {
+              // Kiểm tra quyền truy cập
+              const hasAccess = item.roles.includes(user.role);
 
-            return (
-                <li key={index}>
-                    {isAllowed ? (
-                        /* ✅ TRƯỜNG HỢP ĐƯỢC PHÉP: Dùng thẻ Link */
-                        <Link 
-                            to={item.path} 
-                            className={`rounded-lg font-medium transition-all duration-200 ${isActive(item.path)}`}
-                        >
-                            {item.label}
-                        </Link>
-                    ) : (
-                        /* ⛔ TRƯỜNG HỢP BỊ KHÓA: Dùng thẻ span + pointer-events-none */
-                        <span 
-                            className="flex justify-between items-center text-gray-400 bg-gray-100/50 
-                                      cursor-not-allowed opacity-50 select-none" // select-none: không cho bôi đen chữ
-                            aria-disabled="true"
-                            // 👇 Mẹo: onClick chặn đứng mọi sự kiện
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} 
-                        >
-                            <span className="pointer-events-none">{item.label}</span>
-                            <span className="text-lg pointer-events-none">🔒</span>
-                        </span>
-                    )}
-                </li>
-            );
-        })}
+              // 👇 KHẮC PHỤC: Nếu không có quyền thì KHÔNG RENDER gì cả (return null)
+              if (!hasAccess) return null; 
+
+              return (
+                  <li key={index} className="mb-2">
+                      <Link 
+                          to={item.path} 
+                          className={`rounded-lg font-bold px-4 py-3 transition-all duration-200 flex items-center gap-3 ${isActive(item.path)}`}
+                      >
+                          {item.label}
+                      </Link>
+                  </li>
+              );
+          })}
 
           {/* LOGOUT */}
           <div className="mt-auto pt-4 border-t border-base-200">
@@ -126,6 +128,36 @@ const Sidebar = ({ children }) => {
 
         </ul>
       </div>
+
+      {/* Modal Xác nhận Đăng xuất */}
+      {deleteModalOpen && (
+                <div className="modal modal-open">
+                    <div className="modal-box">
+                        <h3 className="font-bold text-2xl text-red-500">⚠️ Xác nhận đăng xuất</h3>
+                        <p className="py-4 text-lg">
+                            Bạn có chắc chắn muốn đăng xuất <span className="font-bold">{userToDelete?.fullName}</span> ({userToDelete?.username}) không?
+                            <br/>
+                            <span className="text-sm text-gray-500 italic">Hành động này không thể hoàn tác.</span>
+                        </p>
+                        <div className="modal-action">
+                            <button 
+                                className="btn btn-ghost" 
+                                onClick={() => setDeleteModalOpen(false)}
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button 
+                                className="btn btn-error text-white" 
+                                onClick={handleConfirmLogout}
+                            >
+                                🗑️ Đăng xuất
+                            </button>
+                        </div>
+                    </div>
+                    {/* Click ra ngoài để đóng */}
+                    <div className="modal-backdrop" onClick={() => setDeleteModalOpen(false)}></div>
+                </div>
+            )}
     </div>
   );
 };

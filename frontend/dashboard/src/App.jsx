@@ -12,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute';
 import DashboardPage from './pages/DashBoardPage'; 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EmployeePage from './pages/EmployeePage';
 
 function App() {
 const location = useLocation();
@@ -47,6 +48,7 @@ const location = useLocation();
                 <Route path="/admin" element={<MenuPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/bill" element={<BillPage />} />
+                <Route path="/employees" element={<EmployeePage />} />
               </Route>
               
               <Route path="*" element={<OrderPage />} />
