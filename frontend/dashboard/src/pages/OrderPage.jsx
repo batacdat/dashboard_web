@@ -24,6 +24,40 @@ const OrderPage = () => {
             }
         };
         fetchMenu();
+
+        // Lắng nghe cập nhật menu từ server qua socket
+        const handleMenuUpdate = (data) => {
+            console.log("🔄 Cập nhật menu từ server:", data);
+
+            setMenu((prevMenu) => {
+                switch(data.type) {
+                    case 'CREATE':
+                        return [...prevMenu, data.item];
+                    case 'UPDATE':
+                        return prevMenu.map(item => 
+                            item._id === data.item._id ? data.item : item
+                        );
+                    case 'DELETE':
+                        return prevMenu.filter(item => item._id !== data.id);
+                    default:
+                        return prevMenu;
+                }
+            });
+            toast.info("Menu đã được cập nhật! 🍽️");
+        };
+        //bat dau lang nghe
+        socket.on('MENU_UPDATE', handleMenuUpdate);
+
+        // Cleanup khi component unmount
+        return () => {
+            socket.off('MENU_UPDATE', handleMenuUpdate);
+        };
+
+
+
+
+
+        
     }, []);
 
     // 👇 Lọc menu theo Tab

@@ -20,6 +20,13 @@ export const createMenuItem = async (req, res) => {
         }
         const newItem = new MenuItem({ name, price, category, image, description });
         const savedItem = await newItem.save();
+
+        // làm socket
+        const io = req.app.get('io');
+        if(io) {
+            io.emit('MENU_UPDATE', {type:'CREATE', item: savedItem});
+        }
+
         res.status(201).json(savedItem);
     }
 
@@ -33,7 +40,12 @@ export const updateMenuItem = async (req, res) => {
     try {
         const { id } = req.params;
       const updateMenuItem = await MenuItem.findByIdAndUpdate(id, req.body, { new: true });
-        res.json(updateMenuItem);
+                // làm socket
+        const io = req.app.get('io');
+        if(io) {
+            io.emit('MENU_UPDATE', {type:'UPDATE', item: updateMenuItem});
+        }
+      res.json(updateMenuItem);
     }
     catch(error) {
         res.status(500).json({ message: 'Error updating menu item', error: error.message });
@@ -45,6 +57,11 @@ export const deleteMenuItem = async (req, res) => {
     try {
        const { id } = req.params;
          await MenuItem.findByIdAndDelete(id); 
+                 // làm socket
+        const io = req.app.get('io');
+        if(io) {
+            io.emit('MENU_UPDATE', {type:'DELETE', id: id});
+        }
         res.json({ message: 'Đã xóa thành công' });
     } catch (error) {
          res.status(500).json({ message: 'Error deleting menu item', error: error.message });

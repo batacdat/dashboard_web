@@ -1,13 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import menuApi from '../api/menuApi';
+import { toast } from 'react-toastify'; // Nếu bạn có dùng toast báo lỗi
+
 
 const MenuPage = () => {
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 👇 1. State quản lý Tab đang chọn (Mặc định là Đồ ăn)
-  const [activeTab, setActiveTab] = useState('Đồ ăn');
-  const categories = ['Đồ ăn', 'Đồ uống', 'Khác'];
+  // 👇 1. THAY THẾ state activeTab BẰNG 2 state này:
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+
+      //state quan ly modal xoa
+      const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+      const [foodToDelete, setFoodToDelete] = useState(null);
+  // Danh sách danh mục dùng cho Dropdown lọc
+  const filterCategories = [
+      { value: 'all', label: 'Tất cả' },
+      { value: 'Đồ ăn', label: 'Đồ ăn' },
+      { value: 'Đồ uống', label: 'Đồ uống' },
+      { value: 'Khác', label: 'Khác' }
+  ];
+
+  // Danh sách danh mục dùng cho Form thêm/sửa (Không có 'all')
+  const formCategories = ['Đồ ăn', 'Đồ uống', 'Khác'];
 
   // State Form
   const [formData, setFormData] = useState({
@@ -29,8 +46,15 @@ const MenuPage = () => {
     }
   };
 
-  // 👇 Hàm lọc danh sách món theo Tab đang chọn
-  const filteredFoods = foods.filter(food => food.category === activeTab);
+  // 👇 2. LOGIC LỌC MỚI (Kết hợp tìm kiếm + danh mục)
+  const filteredFoods = foods.filter(food => {
+      // Điều kiện 1: Khớp danh mục (nếu chọn 'all' thì luôn đúng)
+      const matchCategory = selectedCategory === 'all' || food.category === selectedCategory;
+      // Điều kiện 2: Khớp tên tìm kiếm
+      const matchSearch = food.name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return matchCategory && matchSearch;
+  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,13 +62,7 @@ const MenuPage = () => {
 
   const openEditModal = (food) => {
     setEditingId(food._id);
-    setFormData({
-        name: food.name,
-        price: food.price,
-        category: food.category || 'Đồ ăn', // Fallback nếu chưa có category
-        image: food.image,
-        description: food.description
-    });
+    setFormData(food);
     document.getElementById('my_modal_1').showModal();
   };
 
@@ -57,115 +75,219 @@ const MenuPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        if (editingId) {
-            await menuApi.update(editingId, formData);
-        } else {
-            await menuApi.create(formData);
-        }
-        document.getElementById('my_modal_1').close();
-        fetchMenu();
+      if (editingId) {
+        await menuApi.update(editingId, formData);
+        toast.success("Cập nhật thành công!");
+      } else {
+        await menuApi.create(formData);
+        toast.success("Thêm món thành công!");
+      }
+      document.getElementById('my_modal_1').close();
+      fetchMenu();
     } catch (error) {
-        alert("Lỗi lưu món ăn");
+      console.error("Lỗi lưu:", error);
+      toast.error("Có lỗi xảy ra: " + (error.response?.data?.message || error.message));
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn chắc chắn muốn xóa món này?")) {
-        await menuApi.delete(id);
-        fetchMenu();
-    }
+  const handleDeleteClick = async (food) => {
+    setFoodToDelete(food);
+    setDeleteModalOpen(true);
   };
+  const confirmDelete = async () => {
+    if (!foodToDelete) return;
+    try {
+      await menuApi.delete(foodToDelete._id);
+      toast.success("Xóa món thành công!");
+      setDeleteModalOpen(false);
+      setFoodToDelete(null);
+      fetchMenu();
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi xóa: " + (error.response?.data?.message || error.message));
+    }
+
+  };
+
+
+
 
   return (
-    <div className="container mx-auto p-4">
-      {/* HEADER + BUTTON THÊM */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">🍔 Quản lý Thực đơn</h1>
-        <button className="btn btn-primary" onClick={openAddModal}>+ Thêm món mới</button>
-      </div>
+    <>
+    <div className="p-4 bg-base-200 min-h-screen">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">🍔 Quản lý Menu</h2>
 
-      {/* 👇 2. GIAO DIỆN TABS (Đồ ăn | Đồ uống | Khác) */}
-      <div className="tabs tabs-boxed bg-white p-2 mb-6 shadow-sm">
-        {categories.map((cat) => (
-            <a 
-                key={cat}
-                className={`tab tab-lg flex-1 ${activeTab === cat ? 'tab-active bg-primary text-white' : ''}`}
-                onClick={() => setActiveTab(cat)}
-            >
-                {cat === 'Đồ ăn' && '🍔 '}
-                {cat === 'Đồ uống' && '🥤 '}
-                {cat === 'Khác' && '🍟 '}
-                {cat}
-            </a>
-        ))}
-      </div>
-
-      {/* GRID HIỂN THỊ MÓN ĂN (Đã lọc) */}
-      {loading ? <div className="text-center">Đang tải...</div> : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredFoods.length === 0 ? (
-            <div className="col-span-4 text-center text-gray-400 py-10">
-                Chưa có món nào trong mục này.
-            </div>
-          ) : (
-             filteredFoods.map((food) => (
-                <div key={food._id} className="card bg-base-100 shadow-xl group">
-                    <figure className="relative h-48 overflow-hidden">
-                        <img 
-                            src={food.image || "https://via.placeholder.com/150"} 
-                            alt={food.name} 
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                            onError={(e) => {e.target.src = "https://cdn-icons-png.flaticon.com/512/1377/1377194.png"}}
-                        />
-                        <button 
-                            onClick={() => handleDelete(food._id)}
-                            className="btn btn-error btn-sm btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >🗑️</button>
-                    </figure>
-                    <div className="card-body p-4">
-                        <div className="flex justify-between items-start">
-                            <h2 className="card-title text-base">{food.name}</h2>
-                            <div className="badge badge-ghost text-xs">{food.category}</div>
-                        </div>
-                        <div className="card-actions justify-between items-center mt-4">
-                            <div className="font-bold text-primary">{Number(food.price).toLocaleString()} đ</div>
-                            <button onClick={() => openEditModal(food)} className="btn btn-sm btn-circle btn-ghost text-blue-500 bg-blue-50">✏️</button>
-                        </div>
-                    </div>
-                </div>
-             ))
-          )}
+      {/* 👇 3. GIAO DIỆN TÌM KIẾM & LỌC (Thay thế cho Tabs cũ) */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-center">
+        
+        {/* Ô TÌM KIẾM */}
+        <div className="form-control w-full md:w-1/3">
+            <input 
+                type="text" 
+                placeholder="🔍 Tìm tên món ăn..." 
+                className="input input-bordered w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
         </div>
-      )}
 
-      {/* MODAL FORM */}
+        {/* DROPDOWN CHỌN DANH MỤC */}
+        <select 
+            className="select select-bordered w-full md:w-1/4"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+            {filterCategories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+            ))}
+        </select>
+
+        {/* NÚT THÊM MỚI (Đẩy sang phải) */}
+        <div className="md:ml-auto w-full md:w-auto">
+            <button className="btn btn-primary w-full md:w-auto" onClick={openAddModal}>
+                + Thêm món mới
+            </button>
+        </div>
+      </div>
+
+      {/* BẢNG DANH SÁCH */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow-xl">
+        <table className="table w-full">
+          {/* head */}
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th>Hình ảnh</th>
+              <th>Tên món</th>
+              <th>Giá</th>
+              <th>Danh mục</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+                 <tr><td colSpan="5" className="text-center">Đang tải...</td></tr>
+            ) : filteredFoods.length > 0 ? (
+                filteredFoods.map((food) => (
+                    <tr key={food._id} className="hover">
+                        <td>
+                        <div className="avatar">
+                            <div className="mask mask-squircle w-12 h-12">
+                            <img src={food.image || "https://via.placeholder.com/50"} alt={food.name} />
+                            </div>
+                        </div>
+                        </td>
+                        <td className="font-bold">{food.name}</td>
+                        <td className="text-primary font-bold">
+                            {food.price?.toLocaleString()} đ
+                        </td>
+                        <td>
+                            <span className={`badge ${
+                                food.category === 'Đồ ăn' ? 'badge-warning' : 
+                                food.category === 'Đồ uống' ? 'badge-info' : 'badge-ghost'
+                            }`}>
+                                {food.category}
+                            </span>
+                        </td>
+                        <td className="flex gap-2">
+                        <button className="btn btn-sm btn-ghost text-blue-500" onClick={() => openEditModal(food)}>
+                            ✏️ Sửa
+                        </button>
+                        <button className="btn btn-sm btn-ghost text-error" onClick={() => handleDeleteClick(food)}>
+                            🗑️ Xóa
+                        </button>
+                        </td>
+                    </tr>
+                ))
+            ) : (
+                <tr>
+                    <td colSpan="5" className="text-center py-8 text-gray-400">
+                        Không tìm thấy món nào 🤔
+                    </td>
+                </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* MODAL THÊM/SỬA (Giữ nguyên logic của bạn) */}
       <dialog id="my_modal_1" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">{editingId ? "Sửa món ăn" : "Thêm món mới"}</h3>
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <input name="name" placeholder="Tên món" className="input input-bordered" value={formData.name} onChange={handleChange} required />
             
-            {/* 👇 3. SELECT BOX ĐỂ CHỌN DANH MỤC */}
-            <select 
-                name="category" 
-                className="select select-bordered w-full" 
-                value={formData.category} 
-                onChange={handleChange}
-            >
-                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
+            <div className="form-control">
+                <label className="label-text mb-1">Tên món</label>
+                <input name="name" placeholder="Ví dụ: Cơm rang" className="input input-bordered" value={formData.name} onChange={handleChange} required />
+            </div>
 
-            <input name="price" type="number" placeholder="Giá tiền" className="input input-bordered" value={formData.price} onChange={handleChange} required />
-            <input name="image" placeholder="Link ảnh (URL)" className="input input-bordered" value={formData.image} onChange={handleChange} />
-            <textarea name="description" placeholder="Mô tả (tùy chọn)" className="textarea textarea-bordered" value={formData.description} onChange={handleChange} />
+            <div className="form-control">
+                <label className="label-text mb-1">Danh mục</label>
+                <select 
+                    name="category" 
+                    className="select select-bordered w-full" 
+                    value={formData.category} 
+                    onChange={handleChange}
+                >
+                    {/* Dùng formCategories để không hiện 'Tất cả' trong lúc thêm mới */}
+                    {formCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+            </div>
+
+            <div className="form-control">
+                <label className="label-text mb-1">Giá tiền</label>
+                <input name="price" type="number" placeholder="0" className="input input-bordered" value={formData.price} onChange={handleChange} required />
+            </div>
+
+            <div className="form-control">
+                <label className="label-text mb-1">Hình ảnh (URL)</label>
+                <input name="image" placeholder="https://..." className="input input-bordered" value={formData.image} onChange={handleChange} />
+            </div>
+            
+            <div className="form-control">
+                <label className="label-text mb-1">Mô tả</label>
+                <textarea name="description" placeholder="Mô tả món ăn..." className="textarea textarea-bordered" value={formData.description} onChange={handleChange} />
+            </div>
+
             <div className="modal-action">
               <button type="button" className="btn" onClick={() => document.getElementById('my_modal_1').close()}>Hủy</button>
               <button type="submit" className="btn btn-primary">Lưu lại</button>
             </div>
           </form>
         </div>
+        <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+        </form>
       </dialog>
+      {/* MODAL XÁC NHẬN XÓA */}
+                        {deleteModalOpen && (
+                <div className="modal modal-open">
+                    <div className="modal-box">
+                        <h3 className="font-bold text-2xl text-red-500">⚠️ Xác nhận xóa</h3>
+                        <p className="py-4 text-lg">
+                            Bạn có chắc chắn muốn xóa món <span className="font-bold">{foodToDelete?.name}</span>  không?
+                            <br/>
+                            <span className="text-sm text-gray-500 italic">Hành động này không thể hoàn tác.</span>
+                        </p>
+                        <div className="modal-action">
+                            <button 
+                                className="btn btn-ghost" 
+                                onClick={() => setDeleteModalOpen(false)}
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button 
+                                className="btn btn-error text-white" 
+                                onClick={confirmDelete}
+                            >
+                                🗑️ Xóa ngay
+                            </button>
+                        </div>
+                    </div>
+                    {/* Click ra ngoài để đóng */}
+                    <div className="modal-backdrop" onClick={() => setDeleteModalOpen(false)}></div>
+                </div>
+            )}
     </div>
+  </>
   );
 };
 
