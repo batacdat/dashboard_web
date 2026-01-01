@@ -49,11 +49,18 @@ function App() {
                 <Route path="/kitchen" element={<KitchenPage />} />
               </Route>
 
+            {/* 3. KHU VỰC THU NGÂN (Cashier + Admin) 
+                 👉 Đây là phần bạn cần thêm mới để Cashier vào được BillPage
+              */}
+              <Route element={<PrivateRoute allowedRoles={['cashier', 'admin']} />}>
+                <Route path="/bill" element={<BillPage />} />
+              </Route>
+
               {/* Chỉ Admin */}
               <Route element={<PrivateRoute allowedRoles={['admin']} />}>
                 <Route path="/admin" element={<MenuPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/bill" element={<BillPage />} />
+               
                 <Route path="/employees" element={<EmployeePage />} />
               </Route>
 

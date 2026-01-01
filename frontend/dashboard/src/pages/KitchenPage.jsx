@@ -90,8 +90,8 @@ const KitchenPage = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {orders.map((order) => (
-          <div key={order._id} className={`card shadow-xl border-2 ${order.displayStatus === 'pending' ? 'border-warning bg-yellow-50' : 'border-success bg-green-50'}`}>
-            <div className="card-body p-4">
+          <div key={order._id} className={`card shadow-xl  border-2 ${order.displayStatus === 'pending' ? 'border-warning bg-yellow-50' : 'border-success bg-green-50'}`}>
+            <div className="card-body p-4 ">
               
               {/* --- HEADER HIỂN THỊ TÊN BÀN --- */}
               <div className="flex justify-between items-center border-b pb-2 mb-2 border-gray-300">

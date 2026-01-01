@@ -171,10 +171,10 @@ const filteredUsers = users.filter(user =>
                                     {/* Badge giữ nguyên */}
                                     <span className={`badge badge-sm border-0 py-3 px-3 ${
                                         user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
-                                        user.role === 'kitchen' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
+                                        user.role === 'kitchen' ? 'bg-orange-100 text-orange-800' : user.role === 'cashier' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                                     }`}>
                                         {user.role === 'admin' ? '👑 Quản lý' : 
-                                         user.role === 'kitchen' ? '👨‍🍳 Bếp' : '📝 Order'}
+                                         user.role === 'kitchen' ? '👨‍🍳 Bếp' : user.role === 'cashier' ? '💰 Thu ngân' : '📝 Order'}
                                     </span>
                                 </td>
                                 <td className="flex justify-center gap-2 pt-3">
@@ -257,6 +257,7 @@ const filteredUsers = users.filter(user =>
                                 >
                                     <option value="staff">Nhân viên Order</option>
                                     <option value="kitchen">Bếp</option>
+                                    <option value="cashier">Thu ngân</option>
                                     <option value="admin">Quản lý (Admin)</option>
                                 </select>
                             </div>

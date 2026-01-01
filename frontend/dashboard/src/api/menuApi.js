@@ -13,5 +13,8 @@ const menuApi = {
     delete: (id) => {
         return axiosClient.delete(`/menu/${id}`);
     },
+    toggleStatus: (id) => {
+        return axiosClient.patch(`/menu/${id}/toggle`);
+    }
 };
 export default menuApi;

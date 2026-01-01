@@ -67,3 +67,26 @@ export const deleteMenuItem = async (req, res) => {
          res.status(500).json({ message: 'Error deleting menu item', error: error.message });
     }
 };
+
+export const toggleMenuItemAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const menuItem = await MenuItem.findById(id);
+        if (!menuItem) {
+            return res.status(404).json({ message: "Món ăn không tồn tại"});
+        }
+        //dao nguoc trang thai true->false hoac false->true
+        menuItem.is_available = !menuItem.is_available;
+        const updatedMenuItem = await menuItem.save();
+
+        // làm socket
+        const io = req.app.get('io');
+        if(io) {
+            io.emit('MENU_UPDATE', {type:'UPDATE', item: updatedMenuItem});
+        }
+
+        res.json(updatedMenuItem);
+    } catch (error) {
+        res.status(500).json({ message: 'Error toggling menu item availability', error: error.message });
+    }
+}; 

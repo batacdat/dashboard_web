@@ -45,7 +45,7 @@ const OrderPage = () => {
             });
             toast.info("Menu đã được cập nhật! 🍽️");
         };
-        //bat dau lang nghe
+        //bat
         socket.on('MENU_UPDATE', handleMenuUpdate);
 
         // Cleanup khi component unmount
@@ -130,9 +130,16 @@ const OrderPage = () => {
             {filteredMenu.map((food) => (
                 <div 
                     key={food._id} 
-                    className="card bg-base-100 shadow hover:shadow-lg cursor-pointer transition-all active:scale-95"
-                    onClick={() => addToCart(food)}
+                    className="card bg-base-100 shadow hover:shadow-lg  "
+                    // onClick={() => addToCart(food)}
                 >
+                    {!food.is_available && (
+                        <div className="absolute inset-0 bg-black/10 z-10 flex items-center justify-center">
+                            <span className="bg-red-600 text-white px-4 py-1 font-bold rounded rotate-[-15deg] shadow-lg border-2 border-white" disabled>
+                                HẾT MÓN
+                            </span>
+                        </div>
+                    )}
                     <figure className="h-32">
                         <img 
                             src={food.image || "https://cdn-icons-png.flaticon.com/512/1377/1377194.png"} 
@@ -143,6 +150,15 @@ const OrderPage = () => {
                     <div className="card-body p-3">
                         <h2 className="card-title text-sm">{food.name}</h2>
                         <p className="text-primary font-bold">{food.price.toLocaleString()} đ</p>
+                        <div className='card-action justify-end'>
+                            <button className="btn btn-sm btn-primary"
+                            disabled={!food.is_available}
+                            onClick={() => addToCart(food)}
+                            >
+                            {food.is_available ? "+" : "Hết"}
+
+                            </button>
+                        </div>
                     </div>
                 </div>
             ))}

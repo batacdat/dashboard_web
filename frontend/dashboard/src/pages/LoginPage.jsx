@@ -84,7 +84,11 @@ const LoginPage = () => {
             navigate('/dashboard'); // Admin thì vào xem Thống kê
         } else if (role === 'kitchen') {
             navigate('/kitchen');   // Bếp thì vào trang Bếp
-        } else {
+        } else if (role === 'cashier') {
+            navigate('/bill');      // Thu ngân thì vào trang Thanh toán
+        }
+        
+        else {
             navigate('/');          // Nhân viên (staff) thì vào trang Gọi món
         }
         window.location.reload(); 
@@ -170,6 +174,7 @@ const LoginPage = () => {
                                         <option value="staff">👤 Nhân viên (Staff)</option>
                                         <option value="kitchen">👨‍🍳 Bếp (Kitchen)</option>
                                         {/* <option value="admin">🛠 Quản lý (Admin)</option> */}
+                                        <option value="cashier">💰 Thu ngân (Cashier)</option>
                                     </select>
                                     <label className="label">
                                         <span className="label-text-alt text-gray-400">Chọn vai trò phù hợp với công việc</span>

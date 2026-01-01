@@ -24,7 +24,7 @@ const Sidebar = ({ children }) => {
     { path: "/dashboard", icon: "📊", label: "Thống kê", roles: ['admin'] },
     { path: "/", icon: "🧾", label: "Gọi món", roles: ['admin', 'staff', 'kitchen'] },
     { path: "/kitchen", icon: "👨‍🍳", label: "Bếp", roles: ['admin', 'kitchen'] },
-    { path: "/bill", icon: "💰", label: "Thu ngân", roles: ['admin'] },
+    { path: "/bill", icon: "💰", label: "Thu ngân", roles: ['admin','cashier'] },
     { path: "/admin", icon: "🍔", label: "Menu", roles: ['admin'] },
     { path: "/employees", icon: "👥", label: "Nhân viên", roles: ['admin'] }
   ];

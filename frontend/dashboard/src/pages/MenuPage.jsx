@@ -108,8 +108,19 @@ const MenuPage = () => {
 
   };
 
-
-
+// Hàm chuyển đổi trạng thái món ăn
+const handleToggleStatus = async (foodId) => {
+    try {
+      await menuApi.toggleStatus(foodId);
+              // Cập nhật lại giao diện ngay lập tức mà không cần reload
+              setFoods(foods.map(item => 
+                  item._id === foodId ? { ...item, is_available: !item.is_available } : item
+              ));
+              toast.success("Đã cập nhật tình trạng món!");
+    } catch (error) {
+        toast.error("Có lỗi xảy ra khi cập nhật trạng thái: " + (error.response?.data?.message || error.message));
+    }
+  };
 
   return (
     <>
@@ -159,6 +170,7 @@ const MenuPage = () => {
               <th>Tên món</th>
               <th>Giá</th>
               <th>Danh mục</th>
+              <th>Tình trạng</th>
               <th>Hành động</th>
             </tr>
           </thead>
@@ -167,7 +179,7 @@ const MenuPage = () => {
                  <tr><td colSpan="5" className="text-center">Đang tải...</td></tr>
             ) : filteredFoods.length > 0 ? (
                 filteredFoods.map((food) => (
-                    <tr key={food._id} className="hover">
+                    <tr key={food._id} className="hover ">
                         <td>
                         <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
@@ -187,6 +199,20 @@ const MenuPage = () => {
                                 {food.category}
                             </span>
                         </td>
+                        {/* cột tình trạng */}
+                        <td>
+                            <label className="cursor-pointer label justify-start gap-2">
+                                <span className="label-text">{food.is_available ? "Còn hàng" : "Hết hàng"}</span> 
+                                <input 
+                                    type="checkbox" 
+                                    className="toggle toggle-success toggle-sm" 
+                                    checked={food.is_available} 
+                                    onChange={() => handleToggleStatus(food._id)} // Hàm xử lý bên dưới
+                                />
+                            </label>
+                        </td>
+
+
                         <td className="flex gap-2">
                         <button className="btn btn-sm btn-ghost text-blue-500" onClick={() => openEditModal(food)}>
                             ✏️ Sửa
