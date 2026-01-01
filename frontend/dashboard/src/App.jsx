@@ -42,10 +42,12 @@ function App() {
             <Route element={<MainLayout />}>
               
               {/* Ai cũng vào được (Staff, Admin, Kitchen) */}
-              <Route path="/" element={<OrderPage />} />
-
+              <Route element={<PrivateRoute allowedRoles={['staff', 'admin', 'kitchen']} />}>
+                <Route path="/" element={<OrderPage />} />
+              </Route>
               {/* Chỉ Bếp hoặc Admin */}
               <Route element={<PrivateRoute allowedRoles={['kitchen', 'admin']} />}>
+               
                 <Route path="/kitchen" element={<KitchenPage />} />
               </Route>
 
