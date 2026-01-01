@@ -25,7 +25,7 @@ const server = http.createServer(app);
 // 3. Cấu hình socket.io
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // Đảm bảo đúng port frontend
+    origin: allowedOrigins, // Đảm bảo đúng port frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
@@ -55,9 +55,10 @@ io.on('connection', (socket) => {
   });
 });
 
+const allowedOrigins = ['http://localhost:5173', 'https://dashboard-web-eight.vercel.app'];
 // 4. Middlewares
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://dashboard-web-eight.vercel.app'],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(morgan('dev'));
