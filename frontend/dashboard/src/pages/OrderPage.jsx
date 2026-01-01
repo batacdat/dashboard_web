@@ -166,7 +166,7 @@ const OrderPage = () => {
       </div>
 
       {/* CỘT PHẢI: GIỎ HÀNG (30%) */}
-      <div className="w-1/3 bg-base-100 rounded-xl shadow-xl flex flex-col h-full">
+      <div className="w-full md:w-1/3 bg-base-100 rounded-xl shadow-xl flex flex-col h-full">
         <div className="p-4 border-b">
             <h2 className="text-sm lg:text-xl font-bold ">🧾 Đơn gọi món</h2>
             <div className="mt-2">
