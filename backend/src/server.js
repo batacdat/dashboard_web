@@ -21,7 +21,10 @@ connectDB();
 // 2. Khởi tạo server
 const app = express(); // <-- Sửa ở đây
 const server = http.createServer(app);
-const allowedOrigins = ['http://localhost:5173', 'https://dashboard-web-eight.vercel.app'];
+const allowedOrigins = [
+  'http://localhost:5173', 
+  'https://dashboard-web-eight.vercel.app',
+  'https://dashboard-iuvxctx34-muinguyens-projects.vercel.app'];
 // 3. Cấu hình socket.io
 const io = new Server(server, {
   cors: {
