@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
 
 // 4. Middlewares
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://dashboard-web-eight.vercel.app'],
   credentials: true
 }));
 app.use(morgan('dev'));
