@@ -120,3 +120,40 @@ export const login = async (req, res) => {
         res.status(500).json({ message: 'Lỗi đăng nhập: ' + error.message });
     }
 };
+// APi   đổi mật khẩu
+
+export const changePassword = async (req, res) => {
+    try {
+        const {oldPassword, newPassword} = req.body;
+        const userId = req.user.id;
+
+        //1.Kiem tra user tồn tại
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(404).json({message: 'Người dùng không tồn tại'});
+        }
+        //2.Kiểm tra mật khẩu cũ
+        const isMatch = await bcrypt.compare (oldPassword, user.password);
+        if(!isMatch){
+            return res.status(400).json({message: 'Mật khẩu cũ không đúng'});
+        }
+        //3. Mã hóa mật khẩu mới
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash (newPassword, salt);
+        //4. Lưu mật khẩu mới vào DB
+        await user.save();
+
+        res.status(200).json({message: 'Đổi mật khẩu thành công'});
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi máy chủ: ' + error.message });
+    }
+
+
+
+
+
+
+};
+
+
+

@@ -1,5 +1,6 @@
 import express from 'express';
-import { register, login } from '../controllers/authController.js';
+import { register, login, changePassword } from '../controllers/authController.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
 
 
 const router = express.Router();
@@ -7,5 +8,5 @@ const router = express.Router();
 router.post('/register', register);
 //dang nhap tai khoan
 router.post('/login', login);
-
+router.put('/change-password',verifyToken, changePassword);
 export default router;

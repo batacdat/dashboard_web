@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom'; // Thêm useLocation
+import { Routes, Route, Outlet } from 'react-router-dom'; // 👈 Thêm Outlet
 import Sidebar from './components/Sidebar';
 
 import MenuPage from './pages/MenuPage';
@@ -14,27 +14,33 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EmployeePage from './pages/EmployeePage';
 
-function App() {
-const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
-
-  // 1. Nếu là trang Login: Hiển thị full màn hình, không có Sidebar
-
-
+// Component Layout để bọc Sidebar (Giúp code gọn hơn)
+const MainLayout = () => {
   return (
-    
+    <Sidebar>
+      <div className="p-4">
+        <Outlet /> {/* Đây là nơi các trang con (Order, Bill...) sẽ hiển thị */}
+      </div>
+    </Sidebar>
+  );
+};
+
+function App() {
+  return (
    <>
-      {/* 👇 2. Đặt ToastContainer ở đây để nó hiện đè lên mọi thứ */}
       <ToastContainer position="top-right" autoClose={3000} />
 
-      {isLoginPage ? (
-        <Routes>
-           <Route path="/login" element={<LoginPage />} />
-        </Routes>
-      ) : (
-        <Sidebar>
-          <div className="p-4">
-            <Routes>
+      <Routes>
+        {/* 1. Trang Login (Công khai) */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* 2. CÁC TRANG CẦN BẢO VỆ (Phải đăng nhập mới vào được) */}
+        {/* PrivateRoute bao trùm tất cả, nếu chưa login sẽ bị đá về /login ngay */}
+        <Route element={<PrivateRoute />}>
+            
+            {/* Nếu đã login -> Hiển thị Layout (Sidebar) -> Hiển thị trang con */}
+            <Route element={<MainLayout />}>
+              
               {/* Ai cũng vào được (Staff, Admin, Kitchen) */}
               <Route path="/" element={<OrderPage />} />
 
@@ -50,12 +56,13 @@ const location = useLocation();
                 <Route path="/bill" element={<BillPage />} />
                 <Route path="/employees" element={<EmployeePage />} />
               </Route>
-              
-              <Route path="*" element={<OrderPage />} />
-            </Routes>
-          </div>
-        </Sidebar>
-      )}
+
+            </Route>
+        </Route>
+
+        {/* Trang 404 */}
+        <Route path="*" element={<div className="text-center mt-10">404 - Trang không tồn tại</div>} />
+      </Routes>
     </>
   );
 };

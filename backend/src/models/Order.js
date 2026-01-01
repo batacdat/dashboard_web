@@ -1,13 +1,14 @@
-// models/Order.js
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
   table_name: { type: String, required: true },
+  
   status: { 
     type: String, 
-    enum: ['pending', 'cooking', 'completed', 'cancelled', 'paid'], // THÊM 'paid' vào đây
+    enum: ['pending', 'cooking', 'completed', 'cancelled', 'paid'], 
     default: 'pending'
   },
+  
   items: [
     {
       menu_item_id: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
@@ -17,8 +18,12 @@ const orderSchema = new mongoose.Schema({
       note: { type: String }
     }
   ],
+  
   total_amount: { type: Number, required: true },
-  created_at: { type: Date, default: Date.now }
+  
+  // ❌ BỎ DÒNG NÀY: created_at: { type: Date, default: Date.now }
+}, { 
+  timestamps: true // ✅ THÊM DÒNG NÀY: Tự động tạo 'createdAt' và 'updatedAt'
 });
 
 const Order = mongoose.model('Order', orderSchema);
