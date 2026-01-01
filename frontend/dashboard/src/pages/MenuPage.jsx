@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import menuApi from '../api/menuApi';
 import { toast } from 'react-toastify'; // Nếu bạn có dùng toast báo lỗi
-
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 const MenuPage = () => {
   const [foods, setFoods] = useState([]);
@@ -187,22 +187,23 @@ const handleToggleStatus = async (foodId) => {
                             </div>
                         </div>
                         </td>
-                        <td className="font-bold">{food.name}</td>
-                        <td className="text-primary font-bold">
+                        <td className="font-bold text-xs md:text-sm">{food.name}</td>
+                        <td className="text-primary font-bold text-xs md:text-sm">
                             {food.price?.toLocaleString()} đ
                         </td>
                         <td>
-                            <span className={`badge ${
+                            <span className={`text-xs md:text-sm badge ${
                                 food.category === 'Đồ ăn' ? 'badge-warning' : 
                                 food.category === 'Đồ uống' ? 'badge-info' : 'badge-ghost'
                             }`}>
-                                {food.category}
+                                {food.category === 'Đồ ăn' ? 'Food' : 
+                                 food.category === 'Đồ uống' ? 'Drink' : 'Other'}
                             </span>
                         </td>
                         {/* cột tình trạng */}
                         <td>
                             <label className="cursor-pointer label justify-start gap-2">
-                                <span className="label-text">{food.is_available ? "Còn hàng" : "Hết hàng"}</span> 
+                                <span className="label-text text-xs md:text-sm">{food.is_available ? "In stock" : "Out of stock"}</span> 
                                 <input 
                                     type="checkbox" 
                                     className="toggle toggle-success toggle-sm" 
@@ -213,13 +214,24 @@ const handleToggleStatus = async (foodId) => {
                         </td>
 
 
-                        <td className="flex gap-2">
-                        <button className="btn btn-sm btn-ghost text-blue-500" onClick={() => openEditModal(food)}>
-                            ✏️ Sửa
-                        </button>
-                        <button className="btn btn-sm btn-ghost text-error" onClick={() => handleDeleteClick(food)}>
-                            🗑️ Xóa
-                        </button>
+                        <td className="flex justify-center gap-2 pt-4">
+                            {/* Nút Sửa */}
+                            <button 
+                                onClick={() => openEditModal(food)} 
+                                className="btn btn-sm btn-ghost text-blue-500 hover:bg-blue-100 tooltip" 
+                                data-tip="Sửa"
+                            >
+                                <FaEdit size={18} />
+                            </button>
+
+                            {/* Nút Xóa */}
+                            <button 
+                                onClick={() => handleDeleteClick(food)} 
+                                className="btn btn-sm btn-ghost text-error hover:bg-red-100 tooltip" 
+                                data-tip="Xóa"
+                            >
+                                <FaTrashAlt size={18} />
+                            </button>
                         </td>
                     </tr>
                 ))

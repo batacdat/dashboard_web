@@ -353,7 +353,7 @@ const BillPage = () => {
                                           {order.total_amount.toLocaleString()} đ
                                       </td>
                                       <td className="text-center">
-                                          <div className="badge badge-success text-white badge-sm">Đã thanh toán</div>
+                                          <div className="badge badge-success text-white badge-sm">Paid</div>
                                       </td>
                                   </tr>
                               ))

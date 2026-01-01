@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import userApi from '../api/userApi';
 import { toast } from 'react-toastify';
 import socket from '../api/socket';
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 const EmployeePage = () => {
     const [users, setUsers] = useState([]);
@@ -180,7 +181,7 @@ const EmployeePage = () => {
                                             </div>
                                             <div>
                                                 <div className="font-bold">{user.fullName}</div>
-                                                <div className="text-xs opacity-50">NV chính thức</div>
+                                                <div className="hidden md:block text-xs opacity-50">NV chính thức</div>
                                             </div>
                                         </div>
                                     </td>
@@ -191,17 +192,28 @@ const EmployeePage = () => {
                                             user.role === 'kitchen' ? 'bg-orange-100 text-orange-800' : 
                                             user.role === 'cashier' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                                         }`}>
-                                            {user.role === 'admin' ? '👑 Quản lý' : 
-                                             user.role === 'kitchen' ? '👨‍🍳 Bếp' : 
-                                             user.role === 'cashier' ? '💰 Thu ngân' : '📝 Order'}
+                                            {user.role === 'admin' ? 'Admin' : 
+                                             user.role === 'kitchen' ? 'Kitchen' : 
+                                             user.role === 'cashier' ? 'Cashier' : 'Order'}
                                         </span>
                                     </td>
                                     <td className="flex justify-center gap-2 pt-4">
-                                        <button onClick={() => handleEdit(user)} className="btn btn-sm btn-ghost text-blue-500">
-                                            ✏️ Sửa
+                                        {/* Nút Sửa */}
+                                        <button 
+                                            onClick={() => handleEdit(user)} 
+                                            className="btn btn-sm btn-ghost text-blue-500 hover:bg-blue-100 tooltip" 
+                                            data-tip="Sửa"
+                                        >
+                                            <FaEdit size={18} />
                                         </button>
-                                        <button onClick={() => handleDeleteClick(user)} className="btn btn-sm btn-ghost text-error">
-                                            🗑️ Xóa
+
+                                        {/* Nút Xóa */}
+                                        <button 
+                                            onClick={() => handleDeleteClick(user)} 
+                                            className="btn btn-sm btn-ghost text-error hover:bg-red-100 tooltip" 
+                                            data-tip="Xóa"
+                                        >
+                                            <FaTrashAlt size={18} />
                                         </button>
                                     </td>
                                 </tr>
