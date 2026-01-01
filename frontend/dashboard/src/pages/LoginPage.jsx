@@ -78,18 +78,20 @@ const LoginPage = () => {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
 
-        const role = res.data.user.role;
-
-        if (role === 'admin') {
-            navigate('/dashboard'); // Admin thì vào xem Thống kê
-        } else if (role === 'kitchen') {
-            navigate('/kitchen');   // Bếp thì vào trang Bếp
-        } else if (role === 'cashier') {
-            navigate('/bill');      // Thu ngân thì vào trang Thanh toán
-        }
-        
-        else {
-            navigate('/');          // Nhân viên (staff) thì vào trang Gọi món
+        const user = res.data.user;
+        // 👇 SỬA ĐOẠN ĐIỀU HƯỚNG TẠI ĐÂY
+        switch (user.role) {
+            case 'kitchen':
+                navigate('/kitchen'); // Bếp thì sang trang Bếp
+                break;
+            case 'cashier': 
+                navigate('/bill');    // Thu ngân thì sang trang Hóa đơn
+                break;
+            case 'admin':
+                navigate('/dashboard'); // Admin thì sang Dashboard (hoặc tùy bạn)
+                break;
+            default:
+                navigate('/');        // Staff (nhân viên order) thì về trang Order
         }
         window.location.reload(); 
     };
