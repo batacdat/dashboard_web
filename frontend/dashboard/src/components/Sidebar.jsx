@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import authApi from "../api/authApi";
+import ThemeToggle from "./ThemeToggle";
 
 const Sidebar = ({ children }) => {
   const location = useLocation();
@@ -14,7 +15,7 @@ const Sidebar = ({ children }) => {
   const [settingModalOpen, setSettingModalOpen] = useState(false); // Modal đổi pass
   
   const [passForm, setPassForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
-
+console.log("IsCollapsed:"+isCollapsed);
   // 1. THÊM STATE QUẢN LÝ ẨN/HIỆN CHO 3 Ô INPUT
     const [showOldPass, setShowOldPass] = useState(false);
     const [showNewPass, setShowNewPass] = useState(false);
@@ -75,18 +76,16 @@ const Sidebar = ({ children }) => {
       <div className="drawer-side z-20">
         <label htmlFor="my-drawer-2" className="drawer-overlay"></label> 
         
-        <aside className={`bg-base-100 text-base-content min-h-full flex flex-col shadow-xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <aside className={`bg-base-100 dark:bg-gray-900 text-base-content min-h-full flex flex-col shadow-xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
             
             {/* HEADER (Giữ nguyên) */}
             <div className="h-16 flex items-center justify-between px-4 border-b border-base-200">
                 {!isCollapsed && 
-                    <div className="text-2xl font-bold text-primary flex flex-col items-center gap-2">Food Admin
-                        <div className="text-xs text-gray-500 mt-1">Xin chào, {user.username}</div>
+                    <div className="text-2xl font-bold text-primary dark:text-gray-100 flex flex-col items-center gap-2">Food Admin
+                        <div className="text-xs text-gray-500 dark:text-gray-100 mt-1">Xin chào, {user.username}</div>
                     
                     </div>}
-                 
-
-                <button onClick={() => setIsCollapsed(!isCollapsed)} className="btn btn-sm btn-ghost hidden lg:flex">
+                <button onClick={() => setIsCollapsed(!isCollapsed)} className="btn btn-sm btn-ghost dark:btn-primary hidden lg:flex">
                     {isCollapsed ? ">>" : "<<"}
                 </button>
             </div>
@@ -98,9 +97,9 @@ const Sidebar = ({ children }) => {
                     if (!item.roles.includes(user.role)) return null;
                     return (
                         <li key={index}>
-                            <Link to={item.path} className={`flex items-center gap-3 px-3 py-3 ${isActive(item.path)} justify-start `}>
+                            <Link to={item.path} className={`flex items-center gap-3 px-3 py-3  dark:hover:bg-gray-700 dark:focus:bg-blue-700 dark:active:bg-blue-600 ${isActive(item.path)} justify-start `}>
                                 <span className="text-xl">{item.icon}</span>
-                                <span className={`font-medium transition-all duration-200 ${isCollapsed ? 'hidden lg:hidden' : 'block'}`}>{item.label}</span>
+                                <span className={`font-medium transition-all dark:text-gray-100 duration-200 ${isCollapsed ? 'hidden lg:hidden' : 'block'}`}>{item.label}</span>
                             </Link>
                         </li>
                     );
@@ -110,13 +109,13 @@ const Sidebar = ({ children }) => {
             {/* 👇👇👇 PHẦN FOOTER ĐÃ SỬA LẠI Ở ĐÂY 👇👇👇 */}
             {/* FOOTER: CÀI ĐẶT & LOGOUT (Đã làm đẹp) */}
             <div className="p-2 border-t border-base-200 bg-base-50">
-                
+                <ThemeToggle isCollapsed={isCollapsed}/>
                 {/* 1. CÀI ĐẶT (Dropdown) */}
                 <div className={`dropdown dropdown-top ${isCollapsed ? 'dropdown-end' : 'w-full'}`}>
                     <div 
                         tabIndex={0} 
                         role="button" 
-                        className="flex items-center gap-3 w-full p-3 text-gray-600 hover:bg-white hover:shadow-sm rounded-lg mb-1 justify-start cursor-pointer transition-all"
+                        className="flex items-center gap-3 w-full p-3 text-gray-600 hover:bg-gray-300 dark:hover:bg-gray-300 hover:shadow-sm rounded-lg mb-1 justify-start cursor-pointer transition-all"
                     >
                         {/* Icon Bánh răng (Settings) */}
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

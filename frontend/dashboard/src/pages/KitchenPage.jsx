@@ -83,8 +83,8 @@ const KitchenPage = () => {
   };
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-gray-700">
+    <div className="p-6 bg-base-200 min-h-screen dark:bg-gray-900">
+      <h2 className="text-3xl font-bold mb-6 text-gray-700 dark:text-gray-200">
         👨‍🍳 Bếp - Đang chờ xử lý ({orders.length})
       </h2>
       

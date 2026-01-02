@@ -2,6 +2,8 @@ import daisyui from "daisyui"; // 1. Dùng import
 
 /** @type {import('tailwindcss').Config} */
 export default { // 2. Dùng export default
+  darkMode: "class",
+  
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

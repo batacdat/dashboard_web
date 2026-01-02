@@ -57,30 +57,30 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen font-sans">
+    <div className="p-6 bg-slate-50 min-h-screen font-sans dark:bg-gray-900">
       
       {/* HEADER & FILTER */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
         <div>
-            <h1 className="text-3xl font-bold text-slate-800">Tổng quan doanh thu</h1>
-            <p className="text-slate-500 mt-1">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-gray-200">Tổng quan doanh thu</h1>
+            <p className="text-slate-500 dark:text-gray-300 mt-1">
                 {filterType === 'day' && 'Thống kê theo giờ trong ngày'}
                 {filterType === 'month' && 'Thống kê từng ngày trong tháng'}
                 {filterType === 'year' && 'Thống kê từng tháng trong năm'}
             </p>
         </div>
         
-        <div className="join bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+        <div className="join bg-white dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <button 
-                className={`join-item btn btn-sm border-none px-6 ${filterType === 'day' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500'}`} 
+                className={`join-item btn btn-sm border-none px-6  ${filterType === 'day' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500 dark:text-gray-300'}`} 
                 onClick={() => setFilterType('day')}
             >Ngày</button>
             <button 
-                className={`join-item btn btn-sm border-none px-6 ${filterType === 'month' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500'}`} 
+                className={`join-item btn btn-sm border-none px-6 ${filterType === 'month' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500 dark:text-gray-300'}`} 
                 onClick={() => setFilterType('month')}
             >Tháng</button>
             <button 
-                className={`join-item btn btn-sm border-none px-6 ${filterType === 'year' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500'}`} 
+                className={`join-item btn btn-sm border-none px-6 ${filterType === 'year' ? 'btn-primary text-white shadow-md' : 'btn-ghost text-gray-500 dark:text-gray-300'}`} 
                 onClick={() => setFilterType('year')}
             >Năm</button>
         </div>
@@ -89,36 +89,36 @@ const DashboardPage = () => {
       {/* STAT CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Doanh thu */}
-          <div className="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+          <div className="relative overflow-hidden bg-white dark:bg-gray-600 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-500 group hover:shadow-md ">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-blue-50 dark:bg-gray-600 rounded-full -mr-10 -mt-10 blur-2xl"></div>
               <div className="relative z-10">
-                  <div className="text-gray-500 text-sm font-medium uppercase tracking-wider">Doanh thu tổng</div>
-                  <div className="text-3xl font-bold text-slate-800 mt-2">{formatCurrency(stats.totalRevenue)}</div>
-                  <div className="mt-2 text-sm text-green-600 bg-green-50 inline-block px-2 py-1 rounded-lg font-semibold">
+                  <div className="text-gray-500 dark:text-gray-200 text-sm font-medium uppercase tracking-wider">Doanh thu tổng</div>
+                  <div className="text-3xl font-bold text-slate-800 dark:text-gray-100 mt-2">{formatCurrency(stats.totalRevenue)}</div>
+                  <div className="mt-2 text-sm text-green-600 bg-green-50 dark:bg-green-100 inline-block px-2 py-1 rounded-lg font-semibold">
                     💰 Tiền thực nhận
                   </div>
               </div>
           </div>
 
           {/* Đơn hàng */}
-          <div className="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all">
-               <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+          <div className="relative overflow-hidden bg-white dark:bg-gray-600 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-500 group hover:shadow-md ">
+               <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-50 dark:bg-gray-600 rounded-full -mr-10 -mt-10 blur-2xl"></div>
               <div className="relative z-10">
-                  <div className="text-gray-500 text-sm font-medium uppercase tracking-wider">Tổng đơn hàng</div>
-                  <div className="text-3xl font-bold text-slate-800 mt-2">{stats.totalOrders}</div>
-                  <div className="mt-2 text-sm text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded-lg font-semibold">
+                  <div className="text-gray-500 dark:text-gray-200 text-sm font-medium uppercase tracking-wider">Tổng đơn hàng</div>
+                  <div className="text-3xl font-bold text-slate-800 dark:text-gray-100 mt-2">{stats.totalOrders}</div>
+                  <div className="mt-2 text-sm text-blue-600 bg-blue-50 dark:bg-blue-100 inline-block px-2 py-1 rounded-lg font-semibold">
                     🧾 Đơn đã tạo
                   </div>
               </div>
           </div>
 
           {/* Giá trị TB */}
-          <div className="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group hover:shadow-md transition-all">
-               <div className="absolute right-0 top-0 w-32 h-32 bg-purple-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+          <div className="relative overflow-hidden bg-white dark:bg-gray-600 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-500 group hover:shadow-md ">
+               <div className="absolute right-0 top-0 w-32 h-32 bg-purple-50 dark:bg-gray-600 rounded-full -mr-10 -mt-10 blur-2xl"></div>
               <div className="relative z-10">
-                  <div className="text-gray-500 text-sm font-medium uppercase tracking-wider">Trung bình / Đơn</div>
-                  <div className="text-3xl font-bold text-slate-800 mt-2">{formatCurrency(avgOrderValue)}</div>
-                  <div className="mt-2 text-sm text-purple-600 bg-purple-50 inline-block px-2 py-1 rounded-lg font-semibold">
+                  <div className="text-gray-500 dark:text-gray-200 text-sm font-medium uppercase tracking-wider">Trung bình / Đơn</div>
+                  <div className="text-3xl font-bold text-slate-800 dark:text-gray-100 mt-2">{formatCurrency(avgOrderValue)}</div>
+                  <div className="mt-2 text-sm text-purple-600 bg-purple-50 dark:bg-purple-100 inline-block px-2 py-1 rounded-lg font-semibold">
                     📈 Hiệu quả
                   </div>
               </div>
@@ -129,10 +129,10 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* AREA CHART - DOANH THU */}
-          <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="lg:col-span-2 bg-white dark:bg-gray-600 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-500">
               <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-bold text-xl text-slate-700">Biểu đồ tăng trưởng</h3>
-                  <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-3 py-1 rounded-full">
+                  <h3 className="font-bold text-xl text-slate-700 dark:text-gray-200">Biểu đồ tăng trưởng</h3>
+                  <span className="text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-3 py-1 rounded-full">
                     {filterType === 'month' ? 'Theo ngày' : 'Theo thời gian'}
                   </span>
               </div>
@@ -176,8 +176,8 @@ const DashboardPage = () => {
           </div>
 
           {/* PIE CHART - TOP ITEMS */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-              <h3 className="font-bold text-xl text-slate-700 mb-6">Món bán chạy</h3>
+          <div className="bg-white dark:bg-gray-600 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-500 flex flex-col">
+              <h3 className="font-bold text-xl text-slate-700 dark:text-gray-200 mb-6">Món bán chạy</h3>
 
               <div className="h-56 w-full mb-4 relative">
                  {stats.pieData && stats.pieData.length > 0 ? (
@@ -206,8 +206,8 @@ const DashboardPage = () => {
                  )}
                  {/* Số tổng ở giữa biểu đồ tròn */}
                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                     <span className="text-3xl font-bold text-slate-700">{stats.totalOrders}</span>
-                     <span className="text-xs text-gray-400 font-medium">Đơn hàng</span>
+                     <span className="text-3xl font-bold text-slate-700 dark:text-gray-200">{stats.totalOrders}</span>
+                     <span className="text-xs text-gray-400 dark:text-gray-200 font-medium">Đơn hàng</span>
                  </div>
               </div>
 
@@ -220,11 +220,11 @@ const DashboardPage = () => {
                                 className="w-2.5 h-2.5 rounded-full" 
                                 style={{backgroundColor: COLORS[index % COLORS.length]}}
                               ></div>
-                              <span className="text-sm font-medium text-slate-600 truncate w-32" title={item.name}>
+                              <span className="text-sm font-medium text-slate-600 dark:text-gray-200 truncate w-32" title={item.name}>
                                   {item.name}
                               </span>
                           </div>
-                          <span className="text-sm font-bold text-slate-700">{item.value}</span>
+                          <span className="text-sm font-bold text-slate-700 dark:text-gray-200">{item.value}</span>
                       </div>
                   ))}
               </div>

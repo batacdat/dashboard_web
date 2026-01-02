@@ -124,18 +124,18 @@ const handleToggleStatus = async (foodId) => {
 
   return (
     <>
-    <div className="p-4 bg-base-200 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">🍔 Quản lý Menu</h2>
+    <div className="p-4 bg-base-200 min-h-screen dark:bg-gray-900">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-purple-100 ">🍔 Quản lý Menu</h2>
 
       {/* 👇 3. GIAO DIỆN TÌM KIẾM & LỌC (Thay thế cho Tabs cũ) */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-center">
+      <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white dark:bg-gray-700 dark:border-gray-400  p-4 rounded-xl shadow-sm items-center">
         
         {/* Ô TÌM KIẾM */}
-        <div className="form-control w-full md:w-1/3">
+        <div className="form-control w-full md:w-1/3 ">
             <input 
                 type="text" 
                 placeholder="🔍 Tìm tên món ăn..." 
-                className="input input-bordered w-full"
+                className="input input-bordered w-full dark:bg-gray-600 dark:text-purple-100 dark:border-purple-100 "
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -143,7 +143,7 @@ const handleToggleStatus = async (foodId) => {
 
         {/* DROPDOWN CHỌN DANH MỤC */}
         <select 
-            className="select select-bordered w-full md:w-1/4"
+            className="select select-bordered w-full md:w-1/4 dark:bg-gray-600 dark:text-purple-100 dark:border-purple-100 "
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -154,17 +154,17 @@ const handleToggleStatus = async (foodId) => {
 
         {/* NÚT THÊM MỚI (Đẩy sang phải) */}
         <div className="md:ml-auto w-full md:w-auto">
-            <button className="btn btn-primary w-full md:w-auto" onClick={openAddModal}>
+            <button className="btn btn-primary w-full md:w-auto " onClick={openAddModal}>
                 + Thêm món mới
             </button>
         </div>
       </div>
 
       {/* BẢNG DANH SÁCH */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-xl">
+      <div className="overflow-x-auto bg-white rounded-xl shadow-xl dark:bg-gray-700 dark:text-purple-100 ">
         <table className="table w-full">
           {/* head */}
-          <thead className="bg-gray-100 text-gray-700">
+          <thead className="bg-gray-100 text-gray-700 dark:bg-gray-600 dark:text-purple-100 ">
             <tr>
               <th>Hình ảnh</th>
               <th>Tên món</th>
@@ -176,10 +176,10 @@ const handleToggleStatus = async (foodId) => {
           </thead>
           <tbody>
             {loading ? (
-                 <tr><td colSpan="5" className="text-center">Đang tải...</td></tr>
+                 <tr><td colSpan="5" className="text-center dark:text-purple-100 ">Đang tải...</td></tr>
             ) : filteredFoods.length > 0 ? (
                 filteredFoods.map((food) => (
-                    <tr key={food._id} className="hover ">
+                    <tr key={food._id} className="hover dark:hover:!bg-black/20">
                         <td>
                         <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
@@ -187,12 +187,12 @@ const handleToggleStatus = async (foodId) => {
                             </div>
                         </div>
                         </td>
-                        <td className="font-bold text-xs md:text-sm">{food.name}</td>
-                        <td className="text-primary font-bold text-xs md:text-sm">
+                        <td className="font-bold text-xs md:text-sm dark:text-purple-100 ">{food.name}</td>
+                        <td className="text-primary font-bold text-xs md:text-sm dark:text-purple-100 ">
                             {food.price?.toLocaleString()} đ
                         </td>
                         <td>
-                            <span className={`text-xs md:text-sm badge ${
+                            <span className={`text-xs md:text-sm badge   ${
                                 food.category === 'Đồ ăn' ? 'badge-warning' : 
                                 food.category === 'Đồ uống' ? 'badge-info' : 'badge-ghost'
                             }`}>
@@ -203,7 +203,7 @@ const handleToggleStatus = async (foodId) => {
                         {/* cột tình trạng */}
                         <td>
                             <label className="cursor-pointer label justify-start gap-2">
-                                <span className="label-text text-xs md:text-sm">{food.is_available ? "In stock" : "Out of stock"}</span> 
+                                <span className="label-text text-xs md:text-sm dark:text-purple-100 ">{food.is_available ? "In stock" : "Out of stock"}</span> 
                                 <input 
                                     type="checkbox" 
                                     className="toggle toggle-success toggle-sm" 

@@ -107,17 +107,17 @@ const OrderPage = () => {
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     return (
-    <div className="flex flex-col lg:flex-row h-screen bg-base-200 p-4 gap-4">
+    <div className="flex flex-col lg:flex-row h-screen bg-base-200 dark:bg-gray-900 p-4 gap-4">
       
       {/* CỘT TRÁI: DANH SÁCH MÓN ĂN (65%) */}
       <div className="lg:w-[65%] flex flex-col gap-4">
         
         {/* 👇 2. THANH TABS CATEGORY */}
-        <div className="tabs tabs-boxed bg-white shadow-sm p-2">
+        <div className="tabs tabs-boxed bg-white dark:bg-gray-500 shadow-sm p-2 ">
             {categories.map((cat) => (
                 <a 
                     key={cat}
-                    className={`tab tab-lg flex-1 ${activeTab === cat ? 'tab-active bg-primary text-white font-bold' : ''}`}
+                    className={`tab tab-lg flex-1 dark:hover:bg-gray-400 dark:text-gray-200  ${activeTab === cat ? 'tab-active bg-primary  text-white font-bold' : ''}`}
                     onClick={() => setActiveTab(cat)}
                 >
                     {cat}
@@ -130,12 +130,12 @@ const OrderPage = () => {
             {filteredMenu.map((food) => (
                 <div 
                     key={food._id} 
-                    className="card bg-base-100 shadow hover:shadow-lg  "
+                    className="card bg-base-100 dark:bg-gray-500 shadow hover:shadow-lg  "
                     // onClick={() => addToCart(food)}
                 >
                     {!food.is_available && (
-                        <div className="absolute inset-0 bg-black/10 z-10 flex items-center justify-center">
-                            <span className="bg-red-600 text-white px-4 py-1 font-bold rounded rotate-[-15deg] shadow-lg border-2 border-white" disabled>
+                        <div className="absolute inset-0 bg-black/10 dark:bg-white/50 z-10 flex items-center justify-center">
+                            <span className="bg-red-600 text-white  px-4 py-1 font-bold rounded rotate-[-15deg] shadow-lg border-2 border-white" disabled>
                                 HẾT MÓN
                             </span>
                         </div>
@@ -144,14 +144,14 @@ const OrderPage = () => {
                         <img 
                             src={food.image || "https://cdn-icons-png.flaticon.com/512/1377/1377194.png"} 
                             alt={food.name} 
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover "
                         />
                     </figure>
                     <div className="card-body p-3">
-                        <h2 className="card-title text-sm">{food.name}</h2>
-                        <p className="text-primary font-bold">{food.price.toLocaleString()} đ</p>
+                        <h2 className="card-title text-sm dark:text-gray-200">{food.name}</h2>
+                        <p className="text-primary font-bold dark:text-gray-200">{food.price.toLocaleString()} đ</p>
                         <div className='card-action justify-end'>
-                            <button className="btn btn-sm btn-primary"
+                            <button className="btn btn-sm btn-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
                             disabled={!food.is_available}
                             onClick={() => addToCart(food)}
                             >
@@ -166,11 +166,11 @@ const OrderPage = () => {
       </div>
 
       {/* CỘT PHẢI: GIỎ HÀNG (30%) */}
-      <div className="w-full md:w-1/3 bg-base-100 rounded-xl shadow-xl flex flex-col h-full">
+      <div className="w-full md:w-1/3 bg-base-100 dark:bg-gray-500 rounded-xl shadow-xl flex flex-col h-full">
         <div className="p-4 border-b">
-            <h2 className="text-sm lg:text-xl font-bold ">🧾 Đơn gọi món</h2>
+            <h2 className="text-sm lg:text-xl font-bold dark:text-purple-100 ">🧾 Đơn gọi món</h2>
             <div className="mt-2">
-                <label className="label-text font-bold">Chọn bàn:</label>
+                <label className="label-text font-bold dark:text-purple-100 ">Chọn bàn:</label>
                 <select 
                     className="select select-bordered select-sm w-full mt-1"
                     value={tableName}
@@ -186,18 +186,18 @@ const OrderPage = () => {
         {/* LIST CÁC MÓN ĐÃ CHỌN */}
         <div className="flex-1 overflow-y-auto p-4">
             {cart.length === 0 ? (
-                <div className="text-center text-gray-400 mt-10">Chưa có món nào</div>
+                <div className="text-center text-gray-400 mt-10 dark:text-purple-100 ">Chưa có món nào</div>
             ) : (
                 cart.map((item) => (
                     <div key={item._id} className="flex justify-between items-center mb-4 border-b pb-2">
                         <div>
-                            <div className="font-bold">{item.name}</div>
-                            <div className="text-sm text-gray-500">
+                            <div className="font-bold dark:text-purple-100 ">{item.name}</div>
+                            <div className="text-sm text-gray-500 dark:text-purple-100 ">
                                 {item.price.toLocaleString()} x {item.quantity}
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                             <div className="font-bold text-primary md:text-[12px]">
+                             <div className="font-bold text-primary md:text-[12px] dark:text-purple-100 ">
                                 {(item.price * item.quantity).toLocaleString()}
                              </div>
                              <button onClick={() => removeFromCart(item._id)} className="btn btn-xs btn-circle btn-error">x</button>

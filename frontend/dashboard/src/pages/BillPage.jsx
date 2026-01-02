@@ -195,17 +195,17 @@ const BillPage = () => {
 
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen font-sans">
+    <div className="p-6 bg-base-200 dark:bg-gray-900 min-h-screen font-sans">
       
       {/* HEADER & TABS */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
             <span className="text-4xl">🧾</span> 
             {activeTab === 'active' ? 'Quản lý Thu Ngân' : 'Lịch sử Giao dịch'}
         </h1>
 
         {/* BUTTONS CHUYỂN TAB */}
-        <div className="join shadow-sm border border-gray-200 bg-white rounded-lg p-1">
+        <div className="join shadow-sm border border-gray-200 bg-white dark:bg-gray-700 dark:text-purple-100 dark:border-gray-600 rounded-lg p-1">
             <button 
                 className={`join-item btn btn-sm px-6 border-none ${activeTab === 'active' ? 'btn-primary text-white' : 'btn-ghost'}`}
                 onClick={() => setActiveTab('active')}
@@ -228,15 +228,15 @@ const BillPage = () => {
                 activeTableNames.map(tableName => {
                     const table = activeTables[tableName];
                     return (
-                        <div key={tableName} className="card bg-white shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 group">
+                        <div key={tableName} className="card bg-white dark:bg-gray-400 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 group">
                             <div className="card-body p-0">
-                                <div className="p-4 bg-gray-50 rounded-t-2xl flex justify-between items-center border-b border-gray-100">
+                                <div className="p-4 bg-gray-50 dark:bg-gray-500 rounded-t-2xl flex justify-between items-center border-b border-gray-100">
                                     <div>
-                                        <h2 className="text-xl font-bold text-gray-800">Bàn {tableName}</h2>
-                                        <span className="text-xs text-gray-500">{table.orders.length} lượt gọi</span>
+                                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Bàn {tableName}</h2>
+                                        <span className="text-xs text-gray-500 dark:text-gray-300">{table.orders.length} lượt gọi</span>
                                     </div>
                                     <button 
-                                        className="btn btn-sm btn-ghost btn-circle text-gray-500 hover:text-primary tooltip tooltip-left"
+                                        className="btn btn-sm btn-ghost btn-circle text-gray-500 dark:text-purple-100  hover:text-primary tooltip tooltip-left"
                                         data-tip="In Hóa Đơn"
                                         onClick={() => handlePrintBill(tableName)}
                                     >
@@ -265,16 +265,17 @@ const BillPage = () => {
                                 <div className="p-4 pt-0 mt-auto">
                                     <div className="border-t border-dashed border-gray-200 my-3"></div>
                                     <div className="flex justify-between items-end mb-4">
-                                        <span className="text-gray-500 text-sm font-medium">Tổng thanh toán</span>
-                                        <span className="text-2xl font-bold text-primary">
+                                        <span className="text-gray-500 dark:text-purple-100  text-sm font-medium">Tổng thanh toán</span>
+                                        <span className="text-2xl font-bold text-primary dark:text-gray-200 ">
                                             {table.totalAmount.toLocaleString()} <span className="text-sm align-top">đ</span>
                                         </span>
                                     </div>
                                     <button 
-                                        className="btn btn-primary w-full text-white shadow-lg hover:shadow-primary/50 flex items-center gap-2 text-lg"
+                                        className="btn btn-primary w-full dark:bg-gray-700 dark:text-purple-100 dark:border-gray-500 shadow-lg hover:shadow-primary/50 dark:hover:shadow-gray-600 flex items-center gap-2 text-lg"
                                         onClick={() => handleOpenQR(tableName)}
                                     >
-                                        <span>💰</span> Thanh Toán / QR
+                                        {/* <span>💰</span>  */}
+                                        Thanh Toán / QR
                                     </button>
                                 </div>
                             </div>
@@ -297,13 +298,13 @@ const BillPage = () => {
                   
                   {/* Thống kê nhanh */}
                   <div className="flex gap-4 w-full md:w-auto">
-                      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-1 min-w-[150px]">
-                          <p className="text-sm text-gray-500">Tổng đơn đã thu</p>
-                          <p className="text-2xl font-bold text-gray-800">{historyOrders.length} đơn</p>
+                      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-1 min-w-[150px] dark:bg-gray-700 dark:border-gray-600">
+                          <p className="text-sm text-gray-500 dark:text-purple-100 ">Tổng đơn đã thu</p>
+                          <p className="text-2xl font-bold text-gray-800 dark:text-purple-100 ">{historyOrders.length} đơn</p>
                       </div>
-                      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-1 min-w-[200px]">
-                          <p className="text-sm text-gray-500">Doanh thu ghi nhận</p>
-                          <p className="text-2xl font-bold text-green-600">{totalRevenueHistory.toLocaleString()} đ</p>
+                      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-1 min-w-[200px] dark:bg-gray-700 dark:border-gray-600">
+                          <p className="text-sm text-gray-500 dark:text-purple-100 ">Doanh thu ghi nhận</p>
+                          <p className="text-2xl font-bold text-green-600 dark:text-green-400">{totalRevenueHistory.toLocaleString()} đ</p>
                       </div>
                   </div>
 
@@ -321,9 +322,9 @@ const BillPage = () => {
               </div>
 
               {/* Bảng danh sách */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                  <table className="table w-full">
-                      <thead className="bg-gray-50">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-auto dark:bg-gray-700 dark:border-gray-600">
+                  <table className="table w-full ">
+                      <thead className="bg-gray-50 dark:bg-gray-600 dark:text-purple-100 ">
                           <tr>
                               <th>Thời gian</th>
                               <th>Bàn</th>
@@ -332,24 +333,24 @@ const BillPage = () => {
                               <th className="text-center">Trạng thái</th>
                           </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="dark:text-purple-100 ">
                           {historyOrders.length > 0 ? (
                               historyOrders.map((order) => (
-                                  <tr key={order._id} className="hover:bg-gray-50">
-                                      <td className="text-gray-500 text-sm">
+                                  <tr key={order._id} className="hover:bg-gray-50  dark:hover:bg-gray-800">
+                                      <td className="text-gray-500 text-sm dark:text-purple-100 ">
                                           {new Date(order.updatedAt).toLocaleString('vi-VN')}
                                       </td>
-                                      <td className="font-bold text-primary">{order.displayTable}</td>
+                                      <td className="font-bold text-primary dark:text-purple-100 ">{order.displayTable}</td>
                                       <td>
                                           <div className="flex flex-col gap-1">
                                               {order.items.map((item, idx) => (
-                                                  <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded w-fit">
+                                                  <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded w-fit dark:bg-gray-500 dark:text-purple-100 ">
                                                       {item.quantity}x {item.name}
                                                   </span>
                                               ))}
                                           </div>
                                       </td>
-                                      <td className="text-right font-bold text-gray-800">
+                                      <td className="text-right font-bold text-gray-800  dark:text-purple-100 ">
                                           {order.total_amount.toLocaleString()} đ
                                       </td>
                                       <td className="text-center">
@@ -359,7 +360,7 @@ const BillPage = () => {
                               ))
                           ) : (
                               <tr>
-                                  <td colSpan="5" className="text-center py-10 text-gray-400">
+                                  <td colSpan="5" className="text-center py-10 text-gray-400 ">
                                       Chưa có giao dịch nào
                                   </td>
                               </tr>

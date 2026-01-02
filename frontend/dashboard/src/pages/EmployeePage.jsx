@@ -117,19 +117,19 @@ const EmployeePage = () => {
     });
 
     return (
-        <div className="p-4 bg-base-200 min-h-screen">
+        <div className="p-4 bg-base-200 min-h-screen dark:bg-gray-900">
             {/* TIÊU ĐỀ */}
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">👥 Quản Lý Nhân Viên</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-purple-100">👥 Quản Lý Nhân Viên</h2>
 
             {/* 👇 3. GIAO DIỆN TÌM KIẾM & LỌC (Đồng bộ với MenuPage) */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-center">
+            <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white dark:bg-gray-700 dark:border-gray-400 p-4 rounded-xl shadow-sm items-center">
                 
                 {/* Ô TÌM KIẾM */}
-                <div className="form-control w-full md:w-1/3">
+                <div className="form-control w-full md:w-1/3 0 ">
                     <input 
                         type="text" 
                         placeholder="🔍 Tìm theo tên hoặc username..." 
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full dark:bg-gray-600 dark:text-purple-100 dark:border-purple-100"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -137,7 +137,7 @@ const EmployeePage = () => {
 
                 {/* DROPDOWN CHỌN VAI TRÒ (Mới thêm) */}
                 <select 
-                    className="select select-bordered w-full md:w-1/4"
+                    className="select select-bordered w-full md:w-1/4 dark:bg-gray-600 dark:text-purple-100 dark:border-purple-100"
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value)}
                 >
@@ -155,9 +155,9 @@ const EmployeePage = () => {
             </div>
 
             {/* BẢNG DANH SÁCH */}
-            <div className="overflow-x-auto bg-white rounded-xl shadow-xl">
+            <div className="overflow-x-auto bg-white rounded-xl shadow-xl dark:bg-gray-700 dark:text-purple-100">
                 <table className="table w-full">
-                    <thead className="bg-gray-100 text-gray-700">
+                    <thead className="bg-gray-100 text-gray-700 dark:bg-gray-600 dark:text-purple-100">
                         <tr>
                             <th>Họ và Tên</th>
                             <th>Username</th>
@@ -168,7 +168,7 @@ const EmployeePage = () => {
                     <tbody>
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
-                                <tr key={user._id} className="hover transition-colors">
+                                <tr key={user._id} className="hover transition-colors dark:hover:!bg-black/20">
                                     <td>
                                         <div className="flex items-center space-x-3">
                                             <div className="avatar hidden md:block">
@@ -185,7 +185,7 @@ const EmployeePage = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="font-medium text-gray-500">{user.username}</td>
+                                    <td className="font-medium text-gray-500 dark:text-purple-100">{user.username}</td>
                                     <td>
                                         <span className={`badge border-0 py-3 px-3 ${
                                             user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
@@ -220,7 +220,7 @@ const EmployeePage = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4" className="text-center py-8 text-gray-400">
+                                <td colSpan="4" className="text-center py-8 text-gray-400 dark:text-purple-100">
                                     Không tìm thấy nhân viên nào 🤔
                                 </td>
                             </tr>
